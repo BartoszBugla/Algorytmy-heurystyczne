@@ -79,10 +79,10 @@ class PVS:
                 X1 = new_X1
 
             for k in range(PS - 1):
-                X[k] = X[k + 1]
-                i = np.random.randint(0, DV)
-                X[k + 1][i] = LB + np.random.random() * (UB - LB)
-            print(fun(X1))
+                if X[k] == X[k + 1]:
+                    i = np.random.randint(0, DV)
+                    X[k + 1][i] = LB + np.random.random() * (UB - LB)
+
         return X1
 
 
