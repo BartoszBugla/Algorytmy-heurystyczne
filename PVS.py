@@ -28,7 +28,7 @@ class PVS:
         pass
 
     # step 1
-    def solve(self, fun=rastrigin, PS=10, FE=1000, DV=1, LB=-5.12, UB=5.12):
+    def solve(self, fun, PS, FE, DV, LB, UB):
         X = np.random.uniform(LB, UB, (PS, DV))
         r1 = 0
         r2 = 0
@@ -89,4 +89,4 @@ class PVS:
 # print(np.array([[n for m in range(3)] for n in range(5)]))
 
 pvc = PVS()
-print(pvc.solve())
+print(pvc.solve(xD_f, 15, 1000, 1, -5.12, 5.12))
