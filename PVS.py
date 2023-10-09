@@ -4,7 +4,7 @@ from random import random
 
 
 def xD_f(X):
-    return X[0] + X[1] + X[2]
+    return (X[0] + 5) ** 2 + 5
 
 
 def rosenbrock_f(X):
@@ -16,12 +16,8 @@ def rosenbrock_f(X):
     )[0]
 
 
-def restrigin_f(X):
-    return (
-        10
-        * len(X)
-        * sum([X[i] ** 2 - 10 * math.cos(2 * math.pi * X[i]) for i in range(len(X))])[0]
-    )
+def rastrigin(x):
+    return 10 * len(x) + sum([(xi**2 - 10 * np.cos(2 * np.pi * xi)) for xi in x])
 
 
 class PVS:
@@ -32,91 +28,65 @@ class PVS:
         pass
 
     # step 1
-    def solve(self, fun, ps, noge=None, fe=1, dv=1, lb=-5.12, ub=5.12) -> float:
-        # step 2
-        X = np.random.uniform(lb, ub, size=(ps, dv))
-        print(
-            "\n".join(["    ".join(["{:4}".format(item) for item in row]) for row in X])
-        )
+    def solve(self, fun=rastrigin, PS=10, FE=1000, DV=1, LB=-5.12, UB=5.12):
+        X = np.random.uniform(LB, UB, (PS, DV))
+        r1 = 0
+        r2 = 0
+        r3 = 0
 
-        # step 3
-        for _ in range(fe):
-            r1 = 0
-            r2 = 0
-            r3 = 0
+        X1 = X[r1]
+        for _ in range(FE):
+            r2 = np.random.randint(0, PS)
+            r3 = np.random.randint(0, PS)
 
-            while r2 == 0 or r2 == r1:
-                r2 = math.floor(random() * ps)
+            while r2 == r1:
+                r2 = np.random.randint(0, PS)
 
-            while r3 == 0 or r3 == r1:
-                r3 = math.floor(random() * ps)
+            while r2 == r3 or r1 == r3:
+                r3 = np.random.randint(0, PS)
 
-            r1 = X[r1]
-            r2 = X[r2]
-            r3 = X[r3]
+            X2 = X[r2]
+            X3 = X[r3]
 
-            print("r1: ", r1, " r2: ", r2, " r3: ", r3)
+            r = np.array([r1, r2, r3])
 
-            # # step 4
-            d1 = np.absolute(1 / ps * r1)
-            d2 = np.absolute(1 / ps * r2)
-            d3 = np.absolute(1 / ps * r3)
+            D = 1 / PS * r
+            V = np.random.random() * (1 - D)
 
-            R1 = random()
-            R2 = random()
-            R3 = random()
+            D1, D2, D3 = D
+            V1, V2, V3 = V
 
-            v1 = R1 * (1 - d1)
-            v2 = R2 * (1 - d2)
-            v3 = R3 * (1 - d3)
+            x = np.absolute(D3 - D1)
+            y = np.absolute(D3 - D2)
+            x1 = (V3 * x) / (V1 - V3)
+            y1 = V2 * x * (V1 - V3)
 
-            print("v1: ", v1, "v2: ", v2, "v3: ", v3)
-            print("d1: ", d1, "d2: ", d2, "d3: ", d3)
-            # # step 5
-            x = np.absolute(d3 - d1)
-            y = np.absolute(d3 - d2)
-            x1 = (v3 * x) / (v1 - v3)
-            y1 = v2 * x * (v1 - v3)
+            new_X1 = 0
+            V_co = V1 / (V1 - V3)
 
-            print("x: ", x, "y: ", y, "x1:", x1, "y: ", y1)
-            # step 6
-            v_co = v1 / v1 - v3
-            new_X = []
-
-            if v3 < v1:
+            if V3 < V1:
                 if (y - y1) > x1:
-                    new_X = [
-                        X[k]
-                        + v_co
-                        * random()
-                        * (X[k][math.floor(d1 * dv) - math.floor(d3 * dv)])
-                        for k in range(ps)
-                    ]
-
+                    new_X1 = X1 + np.random.random() * V_co * (X1 - X3)
+                    pass
                 else:
-                    new_X = [
-                        X[k]
-                        + v_co
-                        * random()
-                        * (X[k][math.floor(d1 * dv) - math.floor(d2 * dv)])
-                        for k in range(ps)
-                    ]
-
+                    new_X1 = X1 + np.random.random() * (X1 - X2)
+                    pass
             else:
-                new_X = [
-                    X[k]
-                    + v_co
-                    * random()
-                    * (X[k][math.floor(d3 * dv) - math.floor(d1 * dv)])
-                    for k in range(ps)
-                ]
+                new_X1 = X1 + np.random.random() * (X3 - X1)
+                pass
 
-            print("wartość funkcji: ", fun(X), "X", X)
-            if fun(new_X) < fun(X):
-                X = new_X
+            if fun(new_X1) < fun(X1):
+                X1 = new_X1
+
+            for k in range(PS - 1):
+                X[k] = X[k + 1]
+                i = np.random.randint(0, DV)
+                X[k + 1][i] = LB + np.random.random() * (UB - LB)
+            print(fun(X1))
+        return X1
 
 
 # print(np.array([[n for m in range(3)] for n in range(5)]))
 
 pvc = PVS()
-pvc.solve(xD_f, 15, fe=1)
+print(pvc.solve())
