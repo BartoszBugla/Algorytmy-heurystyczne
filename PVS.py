@@ -58,7 +58,7 @@ class PVS:
             x = np.absolute(D3 - D1)
             y = np.absolute(D3 - D2)
             x1 = (V3 * x) / (V1 - V3)
-            y1 = V2 * x * (V1 - V3)
+            y1 = (V2 * x) / (V1 - V3)
 
             V_co = V1 / (V1 - V3)
 
