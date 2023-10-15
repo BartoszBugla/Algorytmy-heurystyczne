@@ -29,10 +29,13 @@ class PVS:
 
     # step 1
     def solve(self, fun, PS, FE, DV, LB, UB):
+        best_solutions = []
         X = np.random.uniform(LB, UB, (PS, DV))
         r1 = 0
         X = sorted(X, key=lambda x: fun(x), reverse=False)
 
+        best_gen_solution = []
+        best_gen_value = math.inf
         for _ in range(FE):
             r2 = np.random.randint(0, PS)
             r3 = np.random.randint(0, PS)
@@ -73,9 +76,24 @@ class PVS:
                 new_X1 = X1 + np.random.random() * (X3 - X1)
                 pass
 
-            if fun(new_X1) < fun(X1):
+            new_x1_value = fun(new_X1)
+            current_x1_value = fun(X1)
+
+            if new_x1_value < current_x1_value:
                 X1 = new_X1
                 X[r1] = X1
+
+                if new_x1_value < best_gen_value:
+                    best_gen_value = new_x1_value
+                    best_gen_solution = X1
+
+            else:
+                if current_x1_value < best_gen_value:
+                    best_gen_value = current_x1_value
+                    best_gen_solution = X1
+
+
+
 
             for k in range(PS - 1):
                 if all(X[k] == X[k + 1]):
@@ -83,14 +101,21 @@ class PVS:
                     X[k + 1][i] = LB + np.random.random() * (UB - LB)
 
             r1 += 1
-            if r1 == PS:
+            if r1 == PS or _ == FE - 1:
                 r1 = 0
+                X = np.random.uniform(LB, UB, (PS, DV))
+                X = sorted(X, key=lambda x: fun(x), reverse=False)
 
-        X = sorted(X, key=lambda x: fun(x), reverse=False)
-        return X[0], fun(X[0])
+                best_solutions.append(best_gen_solution)
+
+                best_gen_solution = []
+                best_gen_value = math.inf
+
+        best = sorted(best_solutions, key=lambda x: fun(x), reverse=False)
+        return best[0], fun(best[0])
 
 
 # print(np.array([[n for m in range(3)] for n in range(5)]))
 
 pvc = PVS()
-print(pvc.solve(xd, 5, 21, 4, -5.12, 5.12))
+print(pvc.solve(xd, 5, 20, 4, -5.12, 5.12))
