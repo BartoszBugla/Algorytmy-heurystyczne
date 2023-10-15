@@ -31,6 +31,7 @@ class PVS:
     def solve(self, fun, PS, FE, DV, LB, UB):
         X = np.random.uniform(LB, UB, (PS, DV))
         r1 = 0
+        X = sorted(X, key=lambda x: fun(x), reverse=False)
 
         for _ in range(FE):
             r2 = np.random.randint(0, PS)
@@ -42,7 +43,6 @@ class PVS:
             while r2 == r3 or r1 == r3:
                 r3 = np.random.randint(0, PS)
 
-            X = sorted(X, key=lambda x: fun(x), reverse=False)
             X1 = X[r1]
             X2 = X[r2]
             X3 = X[r3]
@@ -58,7 +58,7 @@ class PVS:
             x = np.absolute(D3 - D1)
             y = np.absolute(D3 - D2)
             x1 = (V3 * x) / (V1 - V3)
-            y1 = V2 * x * (V1 - V3)
+            y1 = (V2 * x) / (V1 - V3)
 
             V_co = V1 / (V1 - V3)
 
@@ -82,12 +82,15 @@ class PVS:
                     i = np.random.randint(0, DV)
                     X[k + 1][i] = LB + np.random.random() * (UB - LB)
 
+            r1 += 1
+            if r1 == PS:
+                r1 = 0
 
-
-        return X1
+        X = sorted(X, key=lambda x: fun(x), reverse=False)
+        return X[0], fun(X[0])
 
 
 # print(np.array([[n for m in range(3)] for n in range(5)]))
 
 pvc = PVS()
-print(pvc.solve(rastrigin, 20, 10000 , 2, -5.12, 5.12))
+print(pvc.solve(xd, 5, 21, 4, -5.12, 5.12))
