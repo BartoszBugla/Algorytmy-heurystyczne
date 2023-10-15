@@ -3,8 +3,8 @@ import math
 from random import random
 
 
-def xD_f(X):
-    return (X[0] + 5) ** 2 + 5
+def xd(X):
+    return ((X[0] + 1) ** 2)
 
 
 def rosenbrock_f(X):
@@ -17,7 +17,7 @@ def rosenbrock_f(X):
 
 
 def rastrigin(x):
-    return 10 * len(x) + sum([(xi**2 - 10 * np.cos(2 * np.pi * xi)) for xi in x])
+    return 10 * len(x) + sum([((xi)**2 - 10 * np.cos(2 * np.pi * (xi))) for xi in x])
 
 
 class PVS:
@@ -31,10 +31,7 @@ class PVS:
     def solve(self, fun, PS, FE, DV, LB, UB):
         X = np.random.uniform(LB, UB, (PS, DV))
         r1 = 0
-        r2 = 0
-        r3 = 0
 
-        X1 = X[r1]
         for _ in range(FE):
             r2 = np.random.randint(0, PS)
             r3 = np.random.randint(0, PS)
@@ -45,6 +42,8 @@ class PVS:
             while r2 == r3 or r1 == r3:
                 r3 = np.random.randint(0, PS)
 
+            X = sorted(X, key=lambda x: fun(x), reverse=False)
+            X1 = X[r1]
             X2 = X[r2]
             X3 = X[r3]
 
@@ -61,7 +60,6 @@ class PVS:
             x1 = (V3 * x) / (V1 - V3)
             y1 = V2 * x * (V1 - V3)
 
-            new_X1 = 0
             V_co = V1 / (V1 - V3)
 
             if V3 < V1:
@@ -77,11 +75,14 @@ class PVS:
 
             if fun(new_X1) < fun(X1):
                 X1 = new_X1
+                X[r1] = X1
 
             for k in range(PS - 1):
-                if X[k] == X[k + 1]:
+                if all(X[k] == X[k + 1]):
                     i = np.random.randint(0, DV)
                     X[k + 1][i] = LB + np.random.random() * (UB - LB)
+
+
 
         return X1
 
@@ -89,4 +90,4 @@ class PVS:
 # print(np.array([[n for m in range(3)] for n in range(5)]))
 
 pvc = PVS()
-print(pvc.solve(xD_f, 15, 1000, 1, -5.12, 5.12))
+print(pvc.solve(rastrigin, 20, 10000 , 2, -5.12, 5.12))
