@@ -19,3 +19,22 @@ def rosenbrock(x):
 
 def xd(X):
     return (X[0] + 1) ** 2 - 1
+
+
+def sphere_function(x):
+    return sum(xi**2 for xi in x)
+
+
+def beale_function(X):
+    x, y = X
+    term1 = (1.5 - x + x * y) ** 2
+    term2 = (2.25 - x + x * y**2) ** 2
+    term3 = (2.625 - x + x * y**3) ** 2
+    return term1 + term2 + term3
+
+
+def bukin_function_n6(X):
+    x, y = X
+    term1 = 100 * abs(y - 0.01 * x**2) ** 0.5
+    term2 = 0.01 * abs(x + 10)
+    return term1 + term2

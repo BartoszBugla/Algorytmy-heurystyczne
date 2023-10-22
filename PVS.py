@@ -5,6 +5,25 @@ import pandas as pd
 from funcs import *
 
 
+class ValueCache:
+    values = {}
+    number_of_fun_calculations = 0
+
+    def fun_with_calc(self, x):
+        self.number_of_fun_calculations += 1
+        return self.fun(x)
+
+    def __init__(self, fun):
+        self.fun = fun
+
+    def get(self, x):
+        if f"{tuple(x)}" not in self.values:
+            self.values[f"{tuple(x)}"] = self.fun_with_calc(x)
+            return self.values[f"{tuple(x)}"]
+
+        return self.values[f"{tuple(x)}"]
+
+
 class PVS:
     name = "PVS"
     generation = 0
@@ -15,15 +34,24 @@ class PVS:
     # step 1
     def solve(self, fun, PS, FE, DV, LB, UB):
         X = np.random.uniform(LB, UB, (PS, DV))
+        Y = ValueCache(fun)
+        X = sorted(X, key=lambda x: Y.get(x), reverse=False)
 
         r = np.array([0, 0, 0])
-
-        solution = 0
+        # import matplotlib.pyplot as plt
 
         for _ in range(FE):
-            solution = X[0]
+            # print(
+            #     pd.DataFrame(
+            #         [np.append(x, Y.get(x)) for x in X],
+            #         columns=["First Argument", "Second Argument", "Value"],
+            #     )
+            # )
+
+            # plt.scatter([Y.get(x) for x in X], np.zeros(PS))
+            # plt.show()
+
             for i in range(PS):
-                X = sorted(X, key=lambda x: fun(x), reverse=False)
                 r[0] = i
 
                 while r[1] == r[0]:
@@ -61,8 +89,7 @@ class PVS:
                 else:
                     prob_new_sol = X[r[0]] + np.random.random() * (X[r[2]] - X[r[0]])
 
-                if fun(prob_new_sol) < fun(solution):
-                    solution = prob_new_sol
+                if Y.get(prob_new_sol) < Y.get(X[r[0]]):
                     X[r[0]] = prob_new_sol
 
                 for k in range(PS - 1):
@@ -70,4 +97,6 @@ class PVS:
                         i = np.random.randint(0, DV)
                         X[k + 1][i] = LB + np.random.random() * (UB - LB)
 
-        return (solution, fun(solution))
+                X = sorted(X, key=lambda x: Y.get(x), reverse=False)
+
+        return (X[0], Y.get(X[0]))
