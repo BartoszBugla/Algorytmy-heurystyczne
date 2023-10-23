@@ -36,16 +36,19 @@ class PVS:
         X = np.random.uniform(LB, UB, (PS, DV))
         Y = ValueCache(fun)
         X = sorted(X, key=lambda x: Y.get(x), reverse=False)
-
+        if_1 = 0
+        if_2 = 0
+        if_3 = 0
         r = np.array([0, 0, 0])
         # import matplotlib.pyplot as plt
 
         for _ in range(FE):
             # print(
+            #     [np.append(x, Y.get(x)) for x in X],
             #     pd.DataFrame(
             #         [np.append(x, Y.get(x)) for x in X],
             #         columns=["First Argument", "Second Argument", "Value"],
-            #     )
+            #     ),
             # )
 
             # plt.scatter([Y.get(x) for x in X], np.zeros(PS))
@@ -80,14 +83,17 @@ class PVS:
                         prob_new_sol = X[r[0]] + np.random.random() * V_co * (
                             X[r[0]] - X[r[2]]
                         )
+                        if_1 += 1
 
                     else:
                         prob_new_sol = X[r[0]] + np.random.random() * (
                             X[r[0]] - X[r[1]]
                         )
+                        if_2 += 1
 
                 else:
                     prob_new_sol = X[r[0]] + np.random.random() * (X[r[2]] - X[r[0]])
+                    if_3 += 1
 
                 if Y.get(prob_new_sol) < Y.get(X[r[0]]):
                     X[r[0]] = prob_new_sol
@@ -97,6 +103,6 @@ class PVS:
                         i = np.random.randint(0, DV)
                         X[k + 1][i] = LB + np.random.random() * (UB - LB)
 
-                X = sorted(X, key=lambda x: Y.get(x), reverse=False)
-
+            X = sorted(X, key=lambda x: Y.get(x), reverse=False)
+        print(if_1, if_2, if_3)
         return (X[0], Y.get(X[0]))
