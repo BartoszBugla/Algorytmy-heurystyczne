@@ -35,24 +35,14 @@ class PVS:
     def solve(self, fun, PS, FE, DV, LB, UB):
         X = np.random.uniform(LB, UB, (PS, DV))
         Y = ValueCache(fun)
-        X = sorted(X, key=lambda x: Y.get(x), reverse=False)
-        if_1 = 0
-        if_2 = 0
-        if_3 = 0
+
+        X = np.array(sorted(X, key=lambda x: Y.get(x), reverse=False))
+
         r = np.array([0, 0, 0])
-        # import matplotlib.pyplot as plt
+
+        last_best = X[:PS//10]
 
         for _ in range(FE):
-            # print(
-            #     [np.append(x, Y.get(x)) for x in X],
-            #     pd.DataFrame(
-            #         [np.append(x, Y.get(x)) for x in X],
-            #         columns=["First Argument", "Second Argument", "Value"],
-            #     ),
-            # )
-
-            # plt.scatter([Y.get(x) for x in X], np.zeros(PS))
-            # plt.show()
 
             for i in range(PS):
                 r[0] = i
@@ -83,17 +73,14 @@ class PVS:
                         prob_new_sol = X[r[0]] + np.random.random() * V_co * (
                             X[r[0]] - X[r[2]]
                         )
-                        if_1 += 1
 
                     else:
                         prob_new_sol = X[r[0]] + np.random.random() * (
                             X[r[0]] - X[r[1]]
                         )
-                        if_2 += 1
 
                 else:
                     prob_new_sol = X[r[0]] + np.random.random() * (X[r[2]] - X[r[0]])
-                    if_3 += 1
 
                 if Y.get(prob_new_sol) < Y.get(X[r[0]]):
                     X[r[0]] = prob_new_sol
@@ -103,6 +90,15 @@ class PVS:
                         i = np.random.randint(0, DV)
                         X[k + 1][i] = LB + np.random.random() * (UB - LB)
 
-            X = sorted(X, key=lambda x: Y.get(x), reverse=False)
-        print(if_1, if_2, if_3)
+            X = np.array(sorted(X, key=lambda x: Y.get(x), reverse=False))
+            for i, solution in enumerate(last_best):
+                if solution not in X:
+                    X[-1-i] = solution
+            X = np.array(sorted(X, key=lambda x: Y.get(x), reverse=False))
+            last_best = X[:PS//10]
+
         return (X[0], Y.get(X[0]))
+
+
+pvc = PVS()
+pvc.solve(bukin_function_n6, 15, 50, 2, -3, 3)
