@@ -25,6 +25,10 @@ class ValueCache:
 
 
 class PVS:
+    """
+    Dopasowane do interfesju z zadania
+    """
+
     def __init__(self):
         self.name = "PVS"
         self.x_best = None
@@ -107,6 +111,9 @@ class PVS:
 
         self.x_best = X[0]
         self.f_best = Y.get(X[0])
-        self.number_of_evaluationF_fitness_function = None
+        self.number_of_evaluationF_fitness_function = Y.number_of_fun_calculations
 
-        return (X[0], Y.get(X[0]))
+        return Y.get(X[0])
+
+
+pvs = PVS()
