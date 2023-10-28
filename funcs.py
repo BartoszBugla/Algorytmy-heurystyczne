@@ -38,3 +38,7 @@ def Bukin(X):
     term1 = 100 * abs(y - 0.01 * x**2) ** 0.5
     term2 = 0.01 * abs(x + 10)
     return term1 + term2
+
+
+def Himmelblau(X):
+    return (X[0] ** 2 + X[1] - 11) ** 2 + (X[0] + X[1] ** 2 - 7) ** 2
