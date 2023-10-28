@@ -32,7 +32,7 @@ class PVS:
         pass
 
     # step 1
-    def solve(self, fun, PS, FE, DV, LB, UB):
+    def solve(self, fun, PS, GEN, DV, LB, UB):
         X = np.random.uniform(LB, UB, (PS, DV))
         Y = ValueCache(fun)
 
@@ -40,10 +40,9 @@ class PVS:
 
         r = np.array([0, 0, 0])
 
-        last_best = X[:PS//10]
+        last_best = X[: PS // 10]
 
-        for _ in range(FE):
-
+        for _ in range(GEN):
             for i in range(PS):
                 r[0] = i
 
@@ -93,9 +92,9 @@ class PVS:
             X = np.array(sorted(X, key=lambda x: Y.get(x), reverse=False))
             for i, solution in enumerate(last_best):
                 if solution not in X:
-                    X[-1-i] = solution
+                    X[-1 - i] = solution
             X = np.array(sorted(X, key=lambda x: Y.get(x), reverse=False))
-            last_best = X[:PS//10]
+            last_best = X[: PS // 10]
 
         return (X[0], Y.get(X[0]))
 
