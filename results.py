@@ -15,10 +15,10 @@ class Tester:
         self.df_y = pd.DataFrame(self.y)
 
     def get_y_mean(self):
-        return np.round(np.mean(self.y), 3)
+        return np.mean(self.y)
 
     def get_y_std(self):
-        return np.round(np.std(self.y), 3)
+        return np.std(self.y)
 
     def draw_2D_x_plot(self):
         plt.scatter([x[0] for x in self.x], [x[1] for x in self.x])
@@ -39,10 +39,10 @@ class Tester:
         return round(worst[1], 3)
 
     def get_x_std(self):
-        return [round(x, 3) for x in list(self.df_x.std())]
+        return self.df_x.std()
 
     def get_x_mean(self):
-        return [round(x, 3) for x in list(self.df_x.mean())]
+        return self.df_x.mean()
 
     def get_variation_x(self):
         coefs = list(np.array(self.get_x_std()) / np.array(self.get_x_mean()) * 100)
