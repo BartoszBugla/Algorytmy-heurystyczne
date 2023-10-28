@@ -32,8 +32,17 @@ class PVS:
         pass
 
     # step 1
-    def solve(self, fun, PS, GEN, DV, LB, UB):
-        X = np.random.uniform(LB, UB, (PS, DV))
+    def solve(self, fun, PS, GEN, DV, LB_X, UB_X, LB_Y=None, UB_Y=None):
+        X = []
+
+        if LB_Y and UB_Y and DV == 2:
+            # for bukin case
+            x = np.random.uniform(LB_X, UB_X, (PS, 1))
+            y = np.random.uniform(LB_Y, UB_Y, (PS, 1))
+            X = np.concatenate((x, y), axis=1)
+        else:
+            X = np.random.uniform(LB_X, UB_X, (PS, DV))
+
         Y = ValueCache(fun)
 
         X = np.array(sorted(X, key=lambda x: Y.get(x), reverse=False))
@@ -87,7 +96,7 @@ class PVS:
                 for k in range(PS - 1):
                     if all(X[k] == X[k + 1]):
                         i = np.random.randint(0, DV)
-                        X[k + 1][i] = LB + np.random.random() * (UB - LB)
+                        X[k + 1][i] = LB_X + np.random.random() * (UB_X - LB_X)
 
             X = np.array(sorted(X, key=lambda x: Y.get(x), reverse=False))
             for i, solution in enumerate(last_best):
@@ -97,7 +106,3 @@ class PVS:
             last_best = X[: PS // 10]
 
         return (X[0], Y.get(X[0]))
-
-
-pvc = PVS()
-pvc.solve(bukin_function_n6, 15, 50, 2, -3, 3)
