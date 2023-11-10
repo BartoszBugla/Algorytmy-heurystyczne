@@ -1,5 +1,4 @@
 import os
-import shutil
 import pickle
 
 from fastapi import UploadFile
