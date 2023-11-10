@@ -1,3 +1,4 @@
+from dill import dumps, loads
 from fastapi import UploadFile
 
 from app.storage import StorageService
@@ -8,7 +9,6 @@ class FunctionsService:
         self.storage = StorageService("functions")
 
     def trigger_by_name(self, name: str, input: list[float]):
-        # @TODO
         return None
 
     def read_all(self):
