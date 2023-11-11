@@ -1,5 +1,6 @@
 import os
-import pickle
+import importlib
+import dill as pickle
 
 from fastapi import UploadFile
 
@@ -7,15 +8,26 @@ from app.core.config import config
 
 
 class StorageService:
-    def __init__(self, storage_name: str = ""):
+    @staticmethod
+    def list_all_folders():
+        """List all folders."""
+        return os.listdir(config.STORAGE_DIR)
+
+    def __init__(self, storage_name: str = "", file_extension: str = "py"):
+        self.file_extension = file_extension
+        self.storage_name = storage_name
         self.storage_path = os.path.join(config.STORAGE_DIR, storage_name)
 
     def __get_file_path(self, fileName: str):
-        return os.path.join(self.storage_path, f"{fileName}.pkl")
+        return os.path.join(self.storage_path, f"{fileName}.{self.file_extension}")
 
-    def list_all_folders(self):
-        """List all folders."""
-        return os.listdir(config.STORAGE_DIR)
+    def load_file(self, fileName: str):
+        module_name = f"storage.{self.storage_name}.{fileName}"
+
+        try:
+            return importlib.import_module(module_name)
+        except ImportError:
+            return None
 
     def get_files_in_folder(self):
         """List all files in folder."""
@@ -30,8 +42,7 @@ class StorageService:
 
     def save_file(self, fileName: str, upload_file: UploadFile):
         with open(self.__get_file_path(fileName), "wb") as file:
-            serialized_file = pickle.dumps(upload_file.file)
-            file.write(serialized_file)
+            file.write(upload_file.file.read())
 
 
 base_storage_service = StorageService()

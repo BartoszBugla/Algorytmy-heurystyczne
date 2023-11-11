@@ -5,9 +5,9 @@ from .functions_service import functions_service
 functions_router = APIRouter(prefix="/functions", tags=["functions"])
 
 
-@functions_router.get("/{name}")
+@functions_router.post("/{name}/trigger")
 async def trigger_by_name(name: str, input: list[float]):
-    """Trigger function by name, as result user should receive function output."""
+    """Trigger function by name."""
     return functions_service.trigger_by_name(name, input)
 
 

@@ -7,8 +7,7 @@ class AlgorithmsService:
     def __init__(self):
         self.storage = StorageService("algorithms")
 
-    def trigger_by_name(self, name: str, input: list[float]):
-        # @TODO
+    def trigger_by_name(self, name: str):
         return None
 
     def read_all(self):

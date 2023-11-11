@@ -7,8 +7,7 @@ algorithms_router = APIRouter(prefix="/algorithms", tags=["algorithms"])
 
 @algorithms_router.get("/{name}")
 async def trigger_by_name(name: str, input: list[float]):
-    """Trigger function by name, as result user should receive function output."""
-    return algorithms_service.trigger_by_name(name, input)
+    return algorithms_service.trigger_by_name(name)
 
 
 @algorithms_router.get("/")
