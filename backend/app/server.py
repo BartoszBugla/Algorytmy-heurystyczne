@@ -14,10 +14,25 @@ from app.storage import storage_router
 from app.algorithms import algorithms_router
 
 
+origins = [
+    "http://localhost:5173",
+]
+
+
 def init_routers(app_: FastAPI) -> None:
     app_.include_router(functions_router)
     app_.include_router(storage_router)
     app_.include_router(algorithms_router)
+
+
+def init_middleware(app_: FastAPI) -> None:
+    app_.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 
 def create_app() -> FastAPI:
@@ -31,6 +46,7 @@ def create_app() -> FastAPI:
         # middleware=make_middleware(),
     )
     init_routers(app_=app_)
+    init_middleware(app_=app_)
 
     return app_
 

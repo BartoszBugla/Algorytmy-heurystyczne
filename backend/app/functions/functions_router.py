@@ -11,7 +11,7 @@ async def trigger_by_name(name: str, input: list[float]):
     return functions_service.trigger_by_name(name, input)
 
 
-@functions_router.get("/")
+@functions_router.get("/", response_model=list[str])
 async def read_all():
     """Get all functions"""
     return functions_service.read_all()
