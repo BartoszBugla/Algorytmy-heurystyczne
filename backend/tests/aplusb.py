@@ -1,3 +1,2 @@
-class Test:
-    def solve(self, a):
-        return a[0] + a[1]
+def __main__(a):
+    return a[0] + a[1]

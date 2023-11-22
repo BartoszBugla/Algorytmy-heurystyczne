@@ -1,31 +1,46 @@
 import { ChangeEvent, useState } from 'react';
 
-import { Autocomplete, Button, Paper, Stack, TextField, Typography } from '@mui/material';
+import {
+  Autocomplete,
+  Button,
+  FormControl,
+  FormLabel,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 
 import { UploadInput } from '@/common/components/UploadInput';
 import { useFunctionsApi } from '@/core/api';
 
 const ManageFunctions = () => {
   const [selectedFunction, setSelectedFunction] = useState<string>('');
-
+  const [functionArguments, setFunctionArguemnts] = useState<string>('');
   const { functions, triggerFunctionMutation, uploadFunctionMutation, deleteFunctionMutation } =
     useFunctionsApi();
 
-  const onUploadFunction = (e: ChangeEvent<HTMLInputElement>) => {
+  const onUploadFunction = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target?.files?.[0];
 
     if (!file) return;
 
-    uploadFunctionMutation.mutateAsync({ name: file.name, file });
+    const { ok } = await uploadFunctionMutation.mutateAsync({ name: file.name, file });
+    if (ok) setSelectedFunction(file.name.split('.')[0]);
   };
 
   const onFunctionTrigger = async () => {
-    const { data } = await triggerFunctionMutation.mutateAsync({
-      name: selectedFunction,
-      args: [1, 2],
-    });
+    const parsedArgs = functionArguments.split(',').map(arg => Number(arg.trim()));
 
-    console.log(data);
+    triggerFunctionMutation.mutateAsync({
+      name: selectedFunction,
+      args: parsedArgs,
+    });
+  };
+
+  const onFunctionDelete = async () => {
+    const { ok } = await deleteFunctionMutation.mutateAsync(selectedFunction);
+    if (ok) setSelectedFunction('');
   };
 
   return (
@@ -33,25 +48,42 @@ const ManageFunctions = () => {
       <Paper>
         <Stack gap={2} padding={5}>
           <Typography variant='h4'>Function manager</Typography>
-          <Autocomplete
-            disablePortal
-            onChange={(e, value) => value && setSelectedFunction(value)}
-            value={selectedFunction}
-            options={functions}
-            sx={{ width: 300 }}
-            renderInput={params => <TextField {...params} label='Function' size='small' />}
-          />
-          <UploadInput label='Upload Function' onChange={onUploadFunction} />
+          <FormControl>
+            <FormLabel>Function</FormLabel>
+
+            <Stack direction='row' width='100%' gap={1} alignItems='center'>
+              <Autocomplete
+                disablePortal
+                fullWidth
+                onChange={(_, value) => value && setSelectedFunction(value)}
+                value={selectedFunction}
+                options={functions}
+                renderInput={params => <TextField {...params} size='small' />}
+              />
+              <UploadInput onChange={onUploadFunction} />
+            </Stack>
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>Function arguments</FormLabel>
+            <TextField
+              onChange={e => setFunctionArguemnts(e.target.value)}
+              value={functionArguments}
+              size='small'
+            />
+          </FormControl>
 
           <Button disabled={!selectedFunction} variant='contained' onClick={onFunctionTrigger}>
             Run function
           </Button>
-          <Typography>{triggerFunctionMutation.data?.data}</Typography>
+          <Typography color='secondary'>
+            Function Solution: {triggerFunctionMutation.data?.data}
+          </Typography>
           <Button
             color='error'
             disabled={!selectedFunction}
             variant='outlined'
-            onClick={() => deleteFunctionMutation.mutateAsync(selectedFunction)}
+            onClick={onFunctionDelete}
           >
             Delete function
           </Button>

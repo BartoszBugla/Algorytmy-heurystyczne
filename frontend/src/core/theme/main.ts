@@ -20,7 +20,23 @@ export const mainTheme = createTheme({
         },
       },
     },
-
+    MuiOutlinedInput: {
+      styleOverrides: {
+        notchedOutline: {
+          borderRadius: 12,
+          '& .Mui-focused': {
+            borderColor: '#fff !imporatant',
+          },
+        },
+      },
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          color: 'white',
+        },
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: {

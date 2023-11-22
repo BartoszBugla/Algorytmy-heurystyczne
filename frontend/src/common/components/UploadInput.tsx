@@ -1,18 +1,16 @@
 import { HTMLAttributes } from 'react';
 
-import { Upload } from '@mui/icons-material';
-import { Button } from '@mui/material';
+import { PostAdd } from '@mui/icons-material';
+import { IconButton } from '@mui/material';
 
-interface UploadInputProps extends HTMLAttributes<HTMLInputElement> {
-  label: string;
-}
+interface UploadInputProps extends HTMLAttributes<HTMLInputElement> {}
 
-const UploadInput = ({ label, ...props }: UploadInputProps) => {
+const UploadInput = ({ ...props }: UploadInputProps) => {
   return (
-    <Button variant='contained' component='label'>
-      {label} <Upload />
+    <IconButton component='label'>
+      <PostAdd />
       <input type='file' hidden {...props} />
-    </Button>
+    </IconButton>
   );
 };
 

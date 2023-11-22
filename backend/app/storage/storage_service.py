@@ -1,8 +1,7 @@
 import os
 import importlib
-import dill as pickle
 
-from fastapi import UploadFile
+from fastapi import UploadFile, HTTPException
 
 from app.core.config import config
 
@@ -19,7 +18,9 @@ class StorageService:
         self.storage_path = os.path.join(config.STORAGE_DIR, storage_name)
 
     def __get_file_path(self, fileName: str):
-        return os.path.join(self.storage_path, f"{fileName}.{self.file_extension}")
+        fileName = fileName.replace(" ", "_")
+
+        return os.path.join(self.storage_path, f"{fileName}")
 
     def load_file(self, fileName: str):
         module_name = f"storage.{self.storage_name}.{fileName}"
@@ -27,7 +28,9 @@ class StorageService:
         try:
             return importlib.import_module(module_name)
         except ImportError:
-            return None
+            raise HTTPException(
+                status_code=404, detail=f"File with given name does not exist."
+            )
 
     def get_files_in_folder(self):
         """List all files in folder."""
@@ -41,8 +44,14 @@ class StorageService:
             return None
 
     def save_file(self, fileName: str, upload_file: UploadFile):
+        if fileName.split(".")[-1] != self.file_extension:
+            raise HTTPException(
+                status_code=400, detail=f"File extension must be {self.file_extension}"
+            )
+
         with open(self.__get_file_path(fileName), "wb") as file:
             file.write(upload_file.file.read())
+            return file
 
 
 base_storage_service = StorageService()
