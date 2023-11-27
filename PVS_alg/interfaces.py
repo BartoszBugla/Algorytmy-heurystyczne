@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Optional, List, Dict
 
+import numpy as np
+
 
 class IStateWriter(ABC):
     @abstractmethod
@@ -30,17 +32,23 @@ class IGenerateTextReport(ABC):
 class IOptimizationAlgorithm(ABC):
     def __init__(self, name: str):
         self.name: str = name
+        self.params_info: List[ParamInfo] = []
+
+        self.gen_num: int = 0
+        self.number_of_evaluation_fitness_function = 0
+        self.X: Optional[np.ndarray] = None
+        self.Y: Optional[Dict] = None
+
         self.x_best: Optional[float] = None
         self.f_best: Optional[float] = None
-        self.number_of_evaluation_fitness_function = 0
+
         self.writer: Optional[IStateWriter] = None
         self.reader: Optional[IStateReader] = None
         self.pdf_report_generator: Optional[IGeneratePDFReport] = None
         self.text_report_generator: Optional[IGenerateTextReport] = None
-        self.params_info: List[ParamInfo] = []
 
     @abstractmethod
-    def solve(self, f: callable, domain: [float, float], parameters: List[float]) -> None:
+    def solve(self, f: callable, domain: List[List[float, float]], parameters: List[float]) -> None:
         pass
 
 
