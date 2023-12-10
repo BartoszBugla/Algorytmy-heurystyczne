@@ -1,11 +1,61 @@
 import math
-import os
 from typing import List, Callable, Dict, Optional
 
 import numpy as np
 
-from PVS_alg.pvs_classes import PVSReader, PVSWriter
-from PVS_alg.interfaces import IOptimizationAlgorithm, ParamInfo, IStateWriter
+from storage.algorithms.pvs_classes import PVSReader, PVSWriter
+
+
+from storage.algorithms.interfaces import (
+    IStateReader,
+    IStateWriter,
+    IGeneratePDFReport,
+    IGenerateTextReport,
+    IOptimizationAlgorithm,
+    ParamInfo,
+)
+
+
+class PVSWriter(IStateWriter):
+    def __init__(self, pvs: IOptimizationAlgorithm):
+        self._pvs: IOptimizationAlgorithm = pvs
+
+    def save_to_file_state_of_algorithm(self, path: str) -> None:
+        def _save_population(f):
+            for i in range(len(self._pvs.X)):
+                for j in range(len(self._pvs.X[0])):
+                    f.write(f"{self._pvs.X[i][j]} ")
+                f.write(f"{self._pvs.Y.get(self._pvs.X[i])}")
+                f.write("\n")
+
+        with open(path, "w") as file:
+            file.write(f"{self._pvs.gen_num}\n")
+            file.write(f"{self._pvs.number_of_evaluation_fitness_function}\n")
+            _save_population(file)
+
+
+class PVSReader(IStateReader):
+    def load_from_file_state_of_algorithm(self, path: str) -> (int, int, np.ndarray):
+        with open(path, "r") as file:
+            lines = file.readlines()
+            start_gen = int(lines[0])
+            start_eval_count = int(lines[1])
+            population = []
+            for row in lines[2:]:
+                row = row.split(" ")[:-1]
+                row = [float(x) for x in row]
+                population.append(row)
+
+            population = np.array(population)
+            return start_gen, start_eval_count, population
+
+
+class PVSIGeneratePDFReport(IGeneratePDFReport):
+    def __init__(self, pvs: IOptimizationAlgorithm):
+        self._pvs: IOptimizationAlgorithm = pvs
+
+    def generate_pdf_report(self, path: str) -> None:
+        pass
 
 
 class PVS(IOptimizationAlgorithm):
@@ -96,8 +146,10 @@ class PVS(IOptimizationAlgorithm):
             if self.gen_num % 10 == 0:
                 self.writer.save_to_file_state_of_algorithm(f"pvs_state.txt")
 
-        self.x_best = self.X[0]
+        self.x_best = self.X[0].tolist()
         self.f_best = self.Y.get(self.X[0])
+
+        return self.x_best
 
 
 class ValueCache:

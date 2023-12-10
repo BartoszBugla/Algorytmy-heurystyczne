@@ -1,6 +1,6 @@
 import numpy as np
 
-from PVS_alg.interfaces import (
+from storage.algorithms.interfaces import (
     IStateReader,
     IStateWriter,
     IGeneratePDFReport,
