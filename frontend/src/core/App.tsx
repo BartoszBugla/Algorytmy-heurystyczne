@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { RouterProvider } from 'react-router-dom';
 
 import { CssBaseline, ThemeProvider } from '@mui/material';
@@ -22,7 +23,9 @@ export const App = () => {
       <ThemeProvider theme={mainTheme}>
         <CssBaseline />
         <SnackbarProvider>
-          <RouterProvider router={router} />
+          <Suspense fallback={<div>Loading...</div>}>
+            <RouterProvider router={router} />
+          </Suspense>
         </SnackbarProvider>
       </ThemeProvider>
     </QueryClientProvider>
