@@ -1,4 +1,6 @@
+export const BASE = '/Algorytmy-heurystyczne';
+
 export const routes = {
-  main: () => '/',
-  algorithmView: (name: string) => `/algorithms/${name}`,
+  main: () => `${BASE}/`,
+  algorithmView: (name: string) => `${BASE}/algorithms/${name}`,
 };
