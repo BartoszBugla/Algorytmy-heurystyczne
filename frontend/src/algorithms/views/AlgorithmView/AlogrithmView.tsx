@@ -1,6 +1,6 @@
 import { Fragment, useEffect } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
-import { useSearchParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { AddCircleOutlineRounded, RemoveCircleOutlineRounded } from '@mui/icons-material';
 import {
@@ -37,8 +37,8 @@ const AlogrithmView = () => {
     defaultValues: initialValues,
   });
 
-  const [searchParams] = useSearchParams();
-  const id = searchParams.get('id') || '';
+  const { id } = useParams<{ id: string }>();
+
   const { functions } = useFunctionsApi();
   const { metadataQuery, triggerAlgorithmMutation } = useAlgorithmsApi({ metadataId: id });
   const { data: metadata } = metadataQuery;

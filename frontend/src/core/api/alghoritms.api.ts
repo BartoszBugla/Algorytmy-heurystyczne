@@ -30,7 +30,7 @@ export const useAlgorithmsApi = ({ enableGetAll, metadataId }: UseAlgorithmsApiO
 
   const uploadAlgoritmMutation = useMutation({
     mutationFn: (payload: { name: string; file: File }) =>
-      api().functions.createFunctionsNamePost(payload.name, { file: payload.file }),
+      api().algorithms.createAlgorithmsNamePost(payload.name, { file: payload.file }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['algorithms'] });
     },

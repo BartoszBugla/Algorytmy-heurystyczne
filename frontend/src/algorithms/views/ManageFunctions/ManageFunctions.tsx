@@ -44,52 +44,50 @@ const ManageFunctions = () => {
   };
 
   return (
-    <Stack direction='row' gap={2} justifyContent='center' alignItems='center' height='100vh'>
-      <Paper>
-        <Stack gap={2} padding={5}>
-          <Typography variant='h4'>Function manager</Typography>
-          <FormControl>
-            <FormLabel>Function</FormLabel>
+    <Paper sx={{ width: '100%', height: '100%' }}>
+      <Stack gap={2} padding={5}>
+        <Typography variant='h4'>Function manager</Typography>
+        <FormControl>
+          <FormLabel>Function</FormLabel>
 
-            <Stack direction='row' width='100%' gap={1} alignItems='center'>
-              <Autocomplete
-                disablePortal
-                fullWidth
-                onChange={(_, value) => value && setSelectedFunction(value)}
-                value={selectedFunction}
-                options={functions}
-                renderInput={params => <TextField {...params} size='small' />}
-              />
-              <UploadInput onChange={onUploadFunction} />
-            </Stack>
-          </FormControl>
-
-          <FormControl>
-            <FormLabel>Function arguments</FormLabel>
-            <TextField
-              onChange={e => setFunctionArguemnts(e.target.value)}
-              value={functionArguments}
-              size='small'
+          <Stack direction='row' width='100%' gap={1} alignItems='center'>
+            <Autocomplete
+              disablePortal
+              fullWidth
+              onChange={(_, value) => value && setSelectedFunction(value)}
+              value={selectedFunction}
+              options={functions}
+              renderInput={params => <TextField {...params} size='small' />}
             />
-          </FormControl>
+            <UploadInput onChange={onUploadFunction} />
+          </Stack>
+        </FormControl>
 
-          <Button disabled={!selectedFunction} variant='contained' onClick={onFunctionTrigger}>
-            Run function
-          </Button>
-          <Typography color='secondary'>
-            Function Solution: {triggerFunctionMutation.data?.data}
-          </Typography>
-          <Button
-            color='error'
-            disabled={!selectedFunction}
-            variant='outlined'
-            onClick={onFunctionDelete}
-          >
-            Delete function
-          </Button>
-        </Stack>
-      </Paper>
-    </Stack>
+        <FormControl>
+          <FormLabel>Function arguments</FormLabel>
+          <TextField
+            onChange={e => setFunctionArguemnts(e.target.value)}
+            value={functionArguments}
+            size='small'
+          />
+        </FormControl>
+
+        <Button disabled={!selectedFunction} variant='contained' onClick={onFunctionTrigger}>
+          Run function
+        </Button>
+        <Typography color='secondary'>
+          Function Solution: {triggerFunctionMutation.data?.data}
+        </Typography>
+        <Button
+          color='error'
+          disabled={!selectedFunction}
+          variant='outlined'
+          onClick={onFunctionDelete}
+        >
+          Delete function
+        </Button>
+      </Stack>
+    </Paper>
   );
 };
 

@@ -14,13 +14,17 @@ export const router = createBrowserRouter([
         Component: lazy(() => import('@/algorithms/views/MainPage')),
       },
       {
-        path: routes.algorithmView(),
+        path: routes.algorithmView(':id'),
         Component: lazy(() => import('@/algorithms/views/AlgorithmView/AlogrithmView')),
       },
-      {
-        path: routes.functions(),
-        Component: lazy(() => import('@/algorithms/views/ManageFunctions/ManageFunctions')),
-      },
+      // {
+      //   path: routes.functions(),
+      //   Component: lazy(() => import('@/algorithms/views/ManageFunctions/ManageFunctions')),
+      // },
+      // {
+      //   path: routes.algorithms(),
+      //   Component: lazy(() => import('@/algorithms/views/ManageAlgorithms/ManageAlgorithms')),
+      // },
     ],
   },
 ]);
