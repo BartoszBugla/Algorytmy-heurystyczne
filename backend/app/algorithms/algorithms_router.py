@@ -1,30 +1,37 @@
 from typing import Callable, List
 
-from fastapi import APIRouter, UploadFile, File, Path, Query, Body
+from fastapi import APIRouter, UploadFile, File, Path, Query, Body, BackgroundTasks
 
 from .algorithms_service import algorithms_service
+from .algorithms_models import AlgorithmMetadata
 
 algorithms_router = APIRouter(prefix="/algorithms", tags=["algorithms"])
 
 
 @algorithms_router.post("/{name}/trigger")
-async def trigger_by_name(
+async def trigger(
     name: str = Path(..., description="The name of the algorithm to trigger"),
     fun: str = Query(..., description="The name of the function to use"),
     domain: List[List[float]] = Body(
-        ..., description="domain for all dimnensions example: [[-5.12, 5.12], [-5.12, 5.12]]]"
+        ...,
+        description="domain for all dimnensions example: [[-5.12, 5.12], [-5.12, 5.12]]]",
     ),
-    params: List[int] = Body(
+    params: List[float] = Body(
         ...,
         description="The parameters for the algorithm if you don't know them check the Parama Info of given algorithm",
     ),
+    # background_tasks: BackgroundTasks = BackgroundTasks(),
 ):
     return algorithms_service.trigger_by_name(name, fun, domain, params)
 
 
+@algorithms_router.get("/{name}")
+async def metadata(name: str) -> AlgorithmMetadata:
+    return algorithms_service.read_algorithm_metadata(name)
+
+
 @algorithms_router.get("/")
-async def read_all():
-    """Get all functions"""
+async def read_all() -> list[str]:
     return algorithms_service.read_all()
 
 

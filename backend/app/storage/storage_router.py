@@ -6,5 +6,5 @@ storage_router = APIRouter(prefix="/storage", tags=["storage"])
 
 
 @storage_router.get("/")
-async def getAllFolders():
+async def get_all_folders():
     return base_storage_service.list_all_folders()

@@ -31,6 +31,9 @@ export const mainTheme = createTheme({
       },
     },
     MuiInputBase: {
+      defaultProps: {
+        size: 'small',
+      },
       styleOverrides: {
         root: {
           color: 'white',
@@ -45,7 +48,13 @@ export const mainTheme = createTheme({
         },
       },
     },
+    MuiSelect: {
+      defaultProps: {
+        size: 'small',
+      },
+    },
   },
+
   palette: {
     mode: 'dark',
 

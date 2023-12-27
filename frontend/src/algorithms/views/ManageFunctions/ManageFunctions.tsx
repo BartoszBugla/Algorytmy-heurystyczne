@@ -11,6 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 
+import { AlgorithmsList } from '@/algorithms/components/AlgorithmsList';
 import { UploadInput } from '@/common/components/UploadInput';
 import { useFunctionsApi } from '@/core/api';
 
@@ -45,6 +46,9 @@ const ManageFunctions = () => {
 
   return (
     <Stack direction='row' gap={2} justifyContent='center' alignItems='center' height='100vh'>
+      <Paper>
+        <AlgorithmsList />
+      </Paper>
       <Paper>
         <Stack gap={2} padding={5}>
           <Typography variant='h4'>Function manager</Typography>

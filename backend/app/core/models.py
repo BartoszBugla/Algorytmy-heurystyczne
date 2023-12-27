@@ -48,17 +48,23 @@ class IOptimizationAlgorithm(ABC):
         self.text_report_generator: Optional[IGenerateTextReport] = None
 
     @abstractmethod
-    def solve(self, f: Callable, domain: List[List[float]], parameters: List[float]) -> None:
+    async def solve(
+        self, f: Callable, domain: List[List[float]], parameters: List[float]
+    ) -> None:
         pass
 
 
 @dataclass
 class ParamInfo:
-    def __init__(self, name: str, description: str, upper_boundary: float, lower_boundary: float):
+    def __init__(
+        self, name: str, description: str, upper_boundary: float, lower_boundary: float
+    ):
         self.name: str = name
         self.description: str = description
         self.upper_bound: float = upper_boundary
         self.lower_bound: float = lower_boundary
 
     def __repr__(self):
-        return f"{self.name}: {self.description} ({self.lower_bound}, {self.upper_bound})"
+        return (
+            f"{self.name}: {self.description} ({self.lower_bound}, {self.upper_bound})"
+        )

@@ -28,7 +28,7 @@ def init_routers(app_: FastAPI) -> None:
 def init_middleware(app_: FastAPI) -> None:
     app_.add_middleware(
         CORSMiddleware,
-        allow_origins=origins,
+        allow_origins=["*"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

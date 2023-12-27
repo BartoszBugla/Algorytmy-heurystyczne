@@ -9,6 +9,14 @@
  * ---------------------------------------------------------------
  */
 
+/** AlgorithmMetadata */
+export interface AlgorithmMetadata {
+  /** Name */
+  name: string;
+  /** Params Info */
+  params_info?: ParamInfo[] | null;
+}
+
 /** Body_create_algorithms__name__post */
 export interface BodyCreateAlgorithmsNamePost {
   /**
@@ -27,10 +35,36 @@ export interface BodyCreateFunctionsNamePost {
   file: File;
 }
 
+/** Body_trigger_algorithms__name__trigger_post */
+export interface BodyTriggerAlgorithmsNameTriggerPost {
+  /**
+   * Domain
+   * domain for all dimnensions example: [[-5.12, 5.12], [-5.12, 5.12]]]
+   */
+  domain: number[][];
+  /**
+   * Params
+   * The parameters for the algorithm if you don't know them check the Parama Info of given algorithm
+   */
+  params: number[];
+}
+
 /** HTTPValidationError */
 export interface HTTPValidationError {
   /** Detail */
   detail?: ValidationError[];
+}
+
+/** ParamInfo */
+export interface ParamInfo {
+  /** Name */
+  name: string;
+  /** Description */
+  description: string;
+  /** Upper Bound */
+  upper_bound: number;
+  /** Lower Bound */
+  lower_bound: number;
 }
 
 /** ValidationError */
@@ -347,7 +381,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags storage
      * @name GetAllFoldersStorageGet
-     * @summary Getallfolders
+     * @summary Get All Folders
      * @request GET:/storage/
      */
     getAllFoldersStorageGet: (params: RequestParams = {}) =>
@@ -363,16 +397,44 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags algorithms
-     * @name TriggerByNameAlgorithmsNameGet
-     * @summary Trigger By Name
-     * @request GET:/algorithms/{name}
+     * @name TriggerAlgorithmsNameTriggerPost
+     * @summary Trigger
+     * @request POST:/algorithms/{name}/trigger
      */
-    triggerByNameAlgorithmsNameGet: (name: string, data: number[], params: RequestParams = {}) =>
+    triggerAlgorithmsNameTriggerPost: (
+      name: string,
+      query: {
+        /**
+         * Fun
+         * The name of the function to use
+         */
+        fun: string;
+      },
+      data: BodyTriggerAlgorithmsNameTriggerPost,
+      params: RequestParams = {},
+    ) =>
       this.request<any, HTTPValidationError>({
-        path: `/algorithms/${name}`,
-        method: 'GET',
+        path: `/algorithms/${name}/trigger`,
+        method: 'POST',
+        query: query,
         body: data,
         type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags algorithms
+     * @name MetadataAlgorithmsNameGet
+     * @summary Metadata
+     * @request GET:/algorithms/{name}
+     */
+    metadataAlgorithmsNameGet: (name: string, params: RequestParams = {}) =>
+      this.request<AlgorithmMetadata, HTTPValidationError>({
+        path: `/algorithms/${name}`,
+        method: 'GET',
         format: 'json',
         ...params,
       }),
@@ -416,7 +478,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * @description Get all functions
+     * No description
      *
      * @tags algorithms
      * @name ReadAllAlgorithmsGet
@@ -424,7 +486,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/algorithms/
      */
     readAllAlgorithmsGet: (params: RequestParams = {}) =>
-      this.request<any, any>({
+      this.request<string[], any>({
         path: `/algorithms/`,
         method: 'GET',
         format: 'json',

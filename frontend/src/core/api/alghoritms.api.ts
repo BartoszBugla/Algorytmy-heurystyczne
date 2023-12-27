@@ -1,16 +1,31 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { api } from '.';
+import { ParamInfo, api } from '.';
 
-export const useAlgorithmsApi = () => {
+interface UseAlgorithmsApiOptions {
+  enableGetAll?: boolean;
+  metadataId?: string;
+}
+
+export const useAlgorithmsApi = ({ enableGetAll, metadataId }: UseAlgorithmsApiOptions = {}) => {
   const queryClient = useQueryClient();
 
   const allAlgoritmsQuery = useQuery({
     queryKey: ['algorithms'],
     queryFn: () =>
       api()
-        .functions.readAllFunctionsGet()
+        .algorithms.readAllAlgorithmsGet()
         .then(({ data }) => data),
+    enabled: enableGetAll,
+  });
+
+  const metadataQuery = useQuery({
+    queryKey: ['algorithms', metadataId],
+    queryFn: () =>
+      api()
+        .algorithms.metadataAlgorithmsNameGet(metadataId || '')
+        .then(({ data }) => data),
+    enabled: !!metadataId,
   });
 
   const uploadAlgoritmMutation = useMutation({
@@ -29,10 +44,28 @@ export const useAlgorithmsApi = () => {
     },
   });
 
+  const triggerAlgorithmMutation = useMutation({
+    mutationFn: ({
+      name,
+      fun,
+      domain,
+      params,
+    }: {
+      name: string;
+      fun: string;
+      domain: number[][];
+      params: number[];
+    }) => api().algorithms.triggerAlgorithmsNameTriggerPost(name, { fun }, { domain, params }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['algorithms'] });
+    },
+  });
   return {
     algoritms: allAlgoritmsQuery.data || [],
     allAlgoritmsQuery,
     uploadAlgoritmMutation,
+    metadataQuery,
     deleteAlgoritmMutation,
+    triggerAlgorithmMutation,
   };
 };

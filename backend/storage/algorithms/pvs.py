@@ -58,13 +58,13 @@ class PVSIGeneratePDFReport(IGeneratePDFReport):
         pass
 
 
-class PVS(IOptimizationAlgorithm):
+class pvs(IOptimizationAlgorithm):
     def __init__(self):
         super().__init__("PVS")
 
         self.params_info: List[ParamInfo] = [
-            ParamInfo("ps", "Population size", math.inf, 3),
-            ParamInfo("gen", "Number of generations", math.inf, 1),
+            ParamInfo("ps", "Population size", 99999, 3),
+            ParamInfo("gen", "Number of generations", 99999, 1),
         ]
 
         self.Y: Optional[ValueCache] = None
@@ -72,7 +72,7 @@ class PVS(IOptimizationAlgorithm):
         self.writer: PVSWriter = PVSWriter(self)
         self.reader: PVSReader = PVSReader()
 
-    def solve(self, fun: Callable, domain, parameters: List[float]) -> None:
+    async def solve(self, fun: Callable, domain, parameters: List[float]) -> None:
         self.X = np.array([])
         # if os.path.exists("pvs_state.txt"):
         #     start_gen, start_eval_count, population = self.reader.load_from_file_state_of_algorithm("pvs_state.txt")
@@ -82,6 +82,8 @@ class PVS(IOptimizationAlgorithm):
 
         ps, gen = parameters
 
+        ps = int(ps)
+        gen = int(gen)
         dv = len(domain)
         np_domain = np.array(domain)
 
@@ -122,24 +124,34 @@ class PVS(IOptimizationAlgorithm):
 
                 if v3 < v1:
                     if (y - y1) > x1:
-                        prob_new_sol = self.X[r[0]] + np.random.random() * v_co * (self.X[r[0]] - self.X[r[2]])
+                        prob_new_sol = self.X[r[0]] + np.random.random() * v_co * (
+                            self.X[r[0]] - self.X[r[2]]
+                        )
 
                     else:
-                        prob_new_sol = self.X[r[0]] + np.random.random() * (self.X[r[0]] - self.X[r[1]])
+                        prob_new_sol = self.X[r[0]] + np.random.random() * (
+                            self.X[r[0]] - self.X[r[1]]
+                        )
 
                 else:
-                    prob_new_sol = self.X[r[0]] + np.random.random() * (self.X[r[2]] - self.X[r[0]])
+                    prob_new_sol = self.X[r[0]] + np.random.random() * (
+                        self.X[r[2]] - self.X[r[0]]
+                    )
 
                 if self.Y.get(prob_new_sol) < self.Y.get(self.X[r[0]]):
                     self.X[r[0]] = prob_new_sol
 
-            self.X = np.array(sorted(self.X, key=lambda x: self.Y.get(x), reverse=False))
+            self.X = np.array(
+                sorted(self.X, key=lambda x: self.Y.get(x), reverse=False)
+            )
 
             for i, solution in enumerate(last_best):
                 if solution not in self.X:
                     self.X[-1 - i] = solution
 
-            self.X = np.array(sorted(self.X, key=lambda x: self.Y.get(x), reverse=False))
+            self.X = np.array(
+                sorted(self.X, key=lambda x: self.Y.get(x), reverse=False)
+            )
             last_best = self.X[: ps // 10]
             self.gen_num += 1
 
@@ -153,8 +165,8 @@ class PVS(IOptimizationAlgorithm):
 
 
 class ValueCache:
-    def __init__(self, fun, algorithm: PVS):
-        self.fun: callable = fun
+    def __init__(self, fun, algorithm: pvs):
+        self.fun: Callable = fun
         self.values: Dict = {}
         self.pvs = algorithm
 
