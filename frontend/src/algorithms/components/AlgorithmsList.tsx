@@ -11,13 +11,15 @@ const AlgorithmsList = () => {
 
   return (
     <Grid container spacing={2}>
-      <Grid item sm={6}>
+      <Grid item sm={6} width={'100%'}>
         <ManageAlgorithms />
       </Grid>
-      <Grid item sm={6}>
+
+      <Grid item sm={6} width={'100%'}>
         <ManageFunctions />
       </Grid>
-      <Grid item sm={12}>
+
+      <Grid item sm={12} width={'100%'}>
         <Paper sx={{ width: '100%', height: '100%' }}>
           <Stack padding={2}>
             <List>
