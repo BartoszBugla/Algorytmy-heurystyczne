@@ -1,4 +1,6 @@
-import { AppBar, Button, IconButton, Toolbar, Typography } from '@mui/material';
+import { AppBar, Button, IconButton, Link, Stack, Toolbar, Typography } from '@mui/material';
+
+import { routes } from '@/core/router';
 
 const Header = () => {
   return (
@@ -14,8 +16,14 @@ const Header = () => {
         <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
           Algorytmy metaheurystyczne
         </Typography>
-        <Button color='inherit'>Lista algorytmów</Button>
-        <Button color='inherit'>Lista funkcji</Button>
+        <Stack direction='row' spacing={2}>
+          <Link component='a' href={routes.main()} color='inherit'>
+            Algorithms list
+          </Link>
+          <Link component='a' href={routes.functions()} color='inherit'>
+            Manage functions
+          </Link>
+        </Stack>
       </Toolbar>
     </AppBar>
   );

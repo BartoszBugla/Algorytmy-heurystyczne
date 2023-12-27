@@ -53,6 +53,15 @@ export const mainTheme = createTheme({
         size: 'small',
       },
     },
+
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          color: 'white',
+          textDecoration: 'underline',
+        },
+      },
+    },
   },
 
   palette: {
@@ -63,6 +72,9 @@ export const mainTheme = createTheme({
     },
     secondary: {
       main: green[500],
+    },
+    text: {
+      secondary: 'grey',
     },
 
     divider: 'rgba(255, 255, 255, 0.12)',

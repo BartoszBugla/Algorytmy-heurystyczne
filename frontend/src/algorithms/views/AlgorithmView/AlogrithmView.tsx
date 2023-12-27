@@ -1,5 +1,6 @@
+import { Fragment } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 
 import { AddCircleOutlineRounded, RemoveCircleOutlineRounded } from '@mui/icons-material';
 import {
@@ -34,7 +35,9 @@ const AlogrithmView = () => {
   const formProps = useForm({
     defaultValues: initialValues,
   });
-  const { id } = useParams<{ id: string }>();
+
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get('id') || '';
   const { functions } = useFunctionsApi();
   const { metadataQuery, triggerAlgorithmMutation } = useAlgorithmsApi({ metadataId: id });
   const { data: metadata } = metadataQuery;
@@ -46,6 +49,16 @@ const AlogrithmView = () => {
   const { fields, append, remove } = useFieldArray({ name: 'domain', control: formProps.control });
 
   const { register } = formProps;
+
+  if (metadataQuery.isLoading) return <Box>loading...</Box>;
+
+  if (!metadataQuery.data)
+    return (
+      <Box>
+        <Typography color='error'>Ouups it seems like this algorithm doesn't exist</Typography>
+        <Link href={routes.main()}>Go back</Link>
+      </Box>
+    );
 
   return (
     <Paper sx={{ maxWidth: CONTAINER_MAX_WIDTH, width: '100%', margin: 'auto', padding: '16px' }}>
@@ -68,9 +81,9 @@ const AlogrithmView = () => {
           <Stack gap={2}>
             {fields.map((field, index) => (
               <Stack direction='row' alignItems='center' gap={2} key={field.id}>
-                <Typography>Lower Bound</Typography>
+                <Typography color='text.secondary'>Lower Bound</Typography>
                 <TextField {...register(`domain.${index}.0`)} sx={{ width: 200 }} />
-                <Typography>Upper Bound</Typography>
+                <Typography color='text.secondary'>Upper Bound</Typography>
                 <TextField {...register(`domain.${index}.1`)} sx={{ width: 200 }} />
                 {index > 0 && <RemoveCircleOutlineRounded onClick={() => remove(index)} />}
               </Stack>
@@ -85,7 +98,7 @@ const AlogrithmView = () => {
           <Typography variant='h6'>Params</Typography>
           <List>
             {(metadata?.params_info || []).map((argument, i) => (
-              <>
+              <Fragment key={i}>
                 <Divider />
                 <ListItem>
                   <Stack gap={3}>
@@ -99,7 +112,7 @@ const AlogrithmView = () => {
                   </Stack>
                 </ListItem>
                 <Divider />
-              </>
+              </Fragment>
             ))}
           </List>
           <Button type='submit'>Trigger</Button>

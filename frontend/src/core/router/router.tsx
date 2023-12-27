@@ -11,11 +11,15 @@ export const router = createBrowserRouter([
     children: [
       {
         path: routes.main(),
-        Component: lazy(() => import('@/algorithms/views/ManageFunctions/ManageFunctions')),
+        Component: lazy(() => import('@/algorithms/views/MainPage')),
       },
       {
         path: routes.algorithmView(':id'),
         Component: lazy(() => import('@/algorithms/views/AlgorithmView/AlogrithmView')),
+      },
+      {
+        path: routes.functions(),
+        Component: lazy(() => import('@/algorithms/views/ManageFunctions/ManageFunctions')),
       },
     ],
   },
