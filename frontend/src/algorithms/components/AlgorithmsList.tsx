@@ -1,5 +1,3 @@
-import { Link as RouterLink } from 'react-router-dom';
-
 import { Link, List, ListItemText, Paper, Stack } from '@mui/material';
 
 import { useAlgorithmsApi } from '@/core/api';

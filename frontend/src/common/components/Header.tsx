@@ -1,4 +1,4 @@
-import { AppBar, Button, IconButton, Link, Stack, Toolbar, Typography } from '@mui/material';
+import { AppBar, IconButton, Link, Stack, Toolbar, Typography } from '@mui/material';
 
 import { routes } from '@/core/router';
 
