@@ -14,7 +14,7 @@ export const router = createBrowserRouter([
         Component: lazy(() => import('@/algorithms/views/MainPage')),
       },
       {
-        path: routes.algorithmView(':id'),
+        path: routes.algorithmView(),
         Component: lazy(() => import('@/algorithms/views/AlgorithmView/AlogrithmView')),
       },
       {

@@ -72,7 +72,7 @@ class pvs(IOptimizationAlgorithm):
         self.writer: PVSWriter = PVSWriter(self)
         self.reader: PVSReader = PVSReader()
 
-    async def solve(self, fun: Callable, domain, parameters: List[float]) -> None:
+    def solve(self, fun: Callable, domain, parameters: List[float]) -> None:
         self.X = np.array([])
         # if os.path.exists("pvs_state.txt"):
         #     start_gen, start_eval_count, population = self.reader.load_from_file_state_of_algorithm("pvs_state.txt")

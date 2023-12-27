@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, useEffect } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 
@@ -11,6 +11,7 @@ import {
   FormControl,
   FormLabel,
   IconButton,
+  Input,
   Link,
   List,
   ListItem,
@@ -19,6 +20,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { enqueueSnackbar } from 'notistack';
 
 import { useAlgorithmsApi, useFunctionsApi } from '@/core/api';
 import { routes } from '@/core/router';
@@ -50,6 +52,11 @@ const AlogrithmView = () => {
 
   const { register } = formProps;
 
+  useEffect(() => {
+    if (triggerAlgorithmMutation.isSuccess) {
+      enqueueSnackbar(`Result is ${triggerAlgorithmMutation.data.data}`, { variant: 'success' });
+    }
+  }, [triggerAlgorithmMutation.data, triggerAlgorithmMutation.isSuccess]);
   if (metadataQuery.isLoading) return <Box>loading...</Box>;
 
   if (!metadataQuery.data)
@@ -60,6 +67,7 @@ const AlogrithmView = () => {
       </Box>
     );
 
+  console.log(formProps.formState.errors);
   return (
     <Paper sx={{ maxWidth: CONTAINER_MAX_WIDTH, width: '100%', margin: 'auto', padding: '16px' }}>
       <form onSubmit={formProps.handleSubmit(handleSubmit)}>
@@ -72,7 +80,9 @@ const AlogrithmView = () => {
               disablePortal
               fullWidth
               options={functions}
-              renderInput={params => <TextField {...params} {...register('fun')} size='small' />}
+              renderInput={params => (
+                <TextField {...params} {...register('fun', { required: true })} size='small' />
+              )}
             />
           </FormControl>
 
@@ -82,9 +92,15 @@ const AlogrithmView = () => {
             {fields.map((field, index) => (
               <Stack direction='row' alignItems='center' gap={2} key={field.id}>
                 <Typography color='text.secondary'>Lower Bound</Typography>
-                <TextField {...register(`domain.${index}.0`)} sx={{ width: 200 }} />
+                <TextField
+                  type='number'
+                  {...register(`domain.${index}.0`, { valueAsNumber: true })}
+                />
                 <Typography color='text.secondary'>Upper Bound</Typography>
-                <TextField {...register(`domain.${index}.1`)} sx={{ width: 200 }} />
+                <TextField
+                  type='number'
+                  {...register(`domain.${index}.1`, { valueAsNumber: true })}
+                />
                 {index > 0 && <RemoveCircleOutlineRounded onClick={() => remove(index)} />}
               </Stack>
             ))}
@@ -107,7 +123,16 @@ const AlogrithmView = () => {
                     <Typography>{`Range (${argument.lower_bound}:${argument.upper_bound})`}</Typography>
                     <FormControl>
                       <FormLabel>Value</FormLabel>
-                      <TextField {...register(`params.${i}`)} sx={{ width: 200 }} />
+                      <TextField
+                        inputProps={{
+                          type: 'number',
+                        }}
+                        {...register(`params.${i}`, {
+                          valueAsNumber: true,
+                          required: true,
+                        })}
+                        sx={{ width: 200 }}
+                      />
                     </FormControl>
                   </Stack>
                 </ListItem>
@@ -115,7 +140,9 @@ const AlogrithmView = () => {
               </Fragment>
             ))}
           </List>
-          <Button type='submit'>Trigger</Button>
+          <Button disabled={!formProps.formState.isValid} type='submit'>
+            Trigger
+          </Button>
         </Stack>
       </form>
     </Paper>

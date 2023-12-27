@@ -35,7 +35,9 @@ class StorageService:
 
     def get_files_in_folder(self):
         """List all files in folder."""
-        return os.listdir(os.path.join(self.storage_path))
+        files = os.listdir(os.path.join(self.storage_path))
+        filtered = list(filter(lambda x: x != "__pycache__", files))
+        return list(filtered)
 
     def delete_file(self, fileName: str):
         """Delete file by name."""

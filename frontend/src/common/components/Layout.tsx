@@ -49,7 +49,6 @@ const Layout = ({ flexElement }: PropsWithChildren<LayoutProps>) => {
             padding: 2,
           }}
         >
-          <Typography>© Cycly 2024</Typography>
           <Typography>Michał Bober</Typography>
           <Typography>Bartosz Bugla</Typography>
           <Typography>Patryk Buchtyar</Typography>
