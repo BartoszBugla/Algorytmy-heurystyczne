@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { ParamInfo, api } from '.';
+import { api } from '.';
 
 interface UseAlgorithmsApiOptions {
   enableGetAll?: boolean;
