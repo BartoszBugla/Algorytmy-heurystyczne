@@ -2,9 +2,7 @@ import math
 from typing import List, Callable, Dict, Optional
 
 import numpy as np
-
-from storage.algorithms.pvs_classes import PVSReader, PVSWriter
-
+import os
 
 from storage.algorithms.interfaces import (
     IStateReader,
@@ -29,6 +27,7 @@ class PVSWriter(IStateWriter):
                 f.write("\n")
 
         with open(path, "w") as file:
+            print("Saving state of algorithm")
             file.write(f"{self._pvs.gen_num}\n")
             file.write(f"{self._pvs.number_of_evaluation_fitness_function}\n")
             _save_population(file)
@@ -72,13 +71,14 @@ class pvs(IOptimizationAlgorithm):
         self.writer: PVSWriter = PVSWriter(self)
         self.reader: PVSReader = PVSReader()
 
-    def solve(self, fun: Callable, domain, parameters: List[float]) -> None:
+    def solve(self, fun: Callable = None, domain: List[List[float]] = None, parameters: List[float] = None) -> List[float]:
         self.X = np.array([])
-        # if os.path.exists("pvs_state.txt"):
-        #     start_gen, start_eval_count, population = self.reader.load_from_file_state_of_algorithm("pvs_state.txt")
-        #     self.gen_num = start_gen
-        #     self.number_of_evaluation_fitness_function = start_eval_count
-        #     self.X = population
+        if os.path.exists("pvs_state.txt"):
+            print("loading state of algorithm")
+            start_gen, start_eval_count, population = self.reader.load_from_file_state_of_algorithm("pvs_state.txt")
+            self.gen_num = start_gen
+            self.number_of_evaluation_fitness_function = start_eval_count
+            self.X = population
 
         ps, gen = parameters
 
@@ -87,7 +87,7 @@ class pvs(IOptimizationAlgorithm):
         dv = len(domain)
         np_domain = np.array(domain)
 
-        if not self.X:
+        if len(self.X) < ps:
             self.X = np.random.uniform(np_domain[:, 0], np_domain[:, 1], (ps, dv))
 
         self.Y = ValueCache(fun, self)
@@ -157,6 +157,9 @@ class pvs(IOptimizationAlgorithm):
 
             if self.gen_num % 10 == 0:
                 self.writer.save_to_file_state_of_algorithm(f"pvs_state.txt")
+
+        if os.path.exists("pvs_state.txt"):
+            os.remove("pvs_state.txt")
 
         self.x_best = self.X[0].tolist()
         self.f_best = self.Y.get(self.X[0])
