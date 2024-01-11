@@ -27,7 +27,6 @@ class PVSWriter(IStateWriter):
                 f.write("\n")
 
         with open(path, "w") as file:
-            print("Saving state of algorithm")
             file.write(f"{self._pvs.gen_num}\n")
             file.write(f"{self._pvs.number_of_evaluation_fitness_function}\n")
             _save_population(file)
