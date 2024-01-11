@@ -54,13 +54,13 @@ def trigger_optuna_test(
     fun: str = Query(..., description="The name of the function to use"),
     domain: List[List[float]] = Body(
         ...,
-        description="domain for all dimnensions example: [[-5.12, 5.12], [-5.12, 5.12]]]",
+        description="domain for all dimnensions example: [[-5.12, 5.12], [-5.12, 5.12]]",
     ),
     params: List[Tuple[float, float, str]] = Body(
         ...,
         description="The parameters for the algorithm in format [[range_start, range_end, int/float], [], etc.,"
-                    "where next lists are the values for next parameters if you don't know the order of params"
-                    "check algorithm's metadata",
+                    "where next lists are the values for next parameters, example:"
+                    " [[3,100,'int'],[20, 300,'int']]"
     ),
     trials_count: int = Body(..., description="Number of trials for algorithm"),
     background_tasks: BackgroundTasks = BackgroundTasks(),
@@ -80,12 +80,12 @@ def trigger_multiple_tests(
         ...,
         description="domain for all dimnensions example: [[-5.12, 5.12], [-5.12, 5.12]]]",
     ),
-    # params: List[List[Tuple[float, float, str]]]
     params: List[List[Tuple[Union[int, float], Union[int, float], str]]] = Body(
     ...,
-    description="The parameters for the algorithm in format [[range_start, range_end, int/float], [], etc.,"
-                "where next lists are the values for next parameters if you don't know the order of params"
-                "check algorithm's metadata",
+    description="The parameters for the algorithm in format  List of of Lists of parameters data"
+                "for next algorithms in order[[range_start, range_end, 'int'/'float'], [], etc.,"
+                "where next lists are the values for next parameters, example:"
+                "[[[3,100,'int'],[20, 300,'int']],[[3,100,'int'],[20, 300,'int']]]"
     ),
     trials_count: int = Body(..., description="Number of trials for each algorithm"),
     background_tasks: BackgroundTasks = BackgroundTasks(),
@@ -95,7 +95,6 @@ def trigger_multiple_tests(
         background_tasks.add_task(
             algorithms_service.trigger_optuna_test_by_name, name, fun, domain, params, trials_count
         )
-
 
     return {"status": f"multiple solvers started for algorithms {names}"}
 
