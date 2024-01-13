@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from 'react';
+import { Fragment } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 
@@ -46,11 +46,13 @@ const AlogrithmView = () => {
 
   const handleOptunaSubmit: SubmitHandler<typeof initialValues> = values => {
     if (id) triggerAlgorithmOptunaMutation.mutate({ name: id, ...values });
+
     enqueueSnackbar(`Algorithm with Optuna is running`, { variant: 'success' });
   };
 
   const handleSubmit: SubmitHandler<typeof initialValues> = values => {
     if (id) triggerAlgorithmMutation.mutate({ name: id, ...values });
+
     enqueueSnackbar(`Algorithm is running`, { variant: 'success' });
   };
 
@@ -58,11 +60,6 @@ const AlogrithmView = () => {
 
   const { register } = formProps;
 
-  useEffect(() => {
-    if (triggerAlgorithmMutation.isSuccess) {
-      enqueueSnackbar(`Result is ${triggerAlgorithmMutation.data.data}`, { variant: 'success' });
-    }
-  }, [triggerAlgorithmMutation.data, triggerAlgorithmMutation.isSuccess]);
   if (metadataQuery.isLoading) return <Box>loading...</Box>;
 
   if (!metadataQuery.data)
@@ -72,8 +69,6 @@ const AlogrithmView = () => {
         <Link href={routes.main()}>Go back</Link>
       </Box>
     );
-
-  console.log(formProps.formState.errors);
 
   return (
     <Paper sx={{ maxWidth: CONTAINER_MAX_WIDTH, width: '100%', margin: 'auto', padding: '16px' }}>
@@ -199,7 +194,6 @@ const AlogrithmView = () => {
           <Button
             onClick={formProps.handleSubmit(handleOptunaSubmit)}
             variant='outlined'
-            // disabled={!formProps.formState.isValid}
             type='submit'
           >
             Trigger Optuna
