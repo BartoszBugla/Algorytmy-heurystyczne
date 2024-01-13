@@ -25,7 +25,7 @@ import { useAlgorithmsApi, useFunctionsApi } from '@/core/api';
 import { routes } from '@/core/router';
 
 const initialValues = {
-  params: [] as number[],
+  params: [] as number[][],
   domain: [[0, 0]] as number[][],
   fun: '',
 };
@@ -40,11 +40,18 @@ const AlogrithmView = () => {
   const { id } = useParams<{ id: string }>();
 
   const { functions } = useFunctionsApi();
-  const { metadataQuery, triggerAlgorithmMutation } = useAlgorithmsApi({ metadataId: id });
+  const { metadataQuery, triggerAlgorithmMutation, triggerAlgorithmOptunaMutation } =
+    useAlgorithmsApi({ metadataId: id });
   const { data: metadata } = metadataQuery;
+
+  const handleOptunaSubmit: SubmitHandler<typeof initialValues> = values => {
+    if (id) triggerAlgorithmOptunaMutation.mutate({ name: id, ...values });
+    enqueueSnackbar(`Algorithm with Optuna is running`, { variant: 'success' });
+  };
 
   const handleSubmit: SubmitHandler<typeof initialValues> = values => {
     if (id) triggerAlgorithmMutation.mutate({ name: id, ...values });
+    enqueueSnackbar(`Algorithm is running`, { variant: 'success' });
   };
 
   const { fields, append, remove } = useFieldArray({ name: 'domain', control: formProps.control });
@@ -67,6 +74,7 @@ const AlogrithmView = () => {
     );
 
   console.log(formProps.formState.errors);
+
   return (
     <Paper sx={{ maxWidth: CONTAINER_MAX_WIDTH, width: '100%', margin: 'auto', padding: '16px' }}>
       <form onSubmit={formProps.handleSubmit(handleSubmit)}>
@@ -112,34 +120,91 @@ const AlogrithmView = () => {
 
           <Typography variant='h6'>Params</Typography>
           <List>
-            {(metadata?.params_info || []).map((argument, i) => (
-              <Fragment key={i}>
-                <Divider />
-                <ListItem>
-                  <Stack gap={3}>
-                    <Typography>Name: {argument.name}</Typography>
-                    <Typography>Description: {argument.description}</Typography>
-                    <Typography>{`Range (${argument.lower_bound}:${argument.upper_bound})`}</Typography>
-                    <FormControl>
-                      <FormLabel>Value</FormLabel>
-                      <TextField
-                        inputProps={{
-                          type: 'number',
-                        }}
-                        {...register(`params.${i}`, {
-                          valueAsNumber: true,
-                          required: true,
-                        })}
-                        sx={{ width: 200 }}
-                      />
-                    </FormControl>
-                  </Stack>
-                </ListItem>
-                <Divider />
-              </Fragment>
-            ))}
+            {(metadata?.params_info || []).map((argument, i) => {
+              const iterations =
+                (formProps.watch(`params.${i}.1`) - formProps.watch(`params.${i}.0`)) /
+                formProps.watch(`params.${i}.2`);
+
+              return (
+                <Fragment key={i}>
+                  <Divider />
+                  <ListItem>
+                    <Stack gap={3}>
+                      <Typography>Name: {argument.name}</Typography>
+                      <Typography>Description: {argument.description}</Typography>
+                      <Typography>{`Range (${argument.lower_bound}:${argument.upper_bound})`}</Typography>
+                      <Typography color='error'>
+                        {!!formProps.formState.errors?.params?.[i]?.length &&
+                          `Invalid values in this section all fields are required, has to be in range  from ${argument.lower_bound} to ${argument.upper_bound} and step has to be positive`}
+                      </Typography>
+                      <Stack gap={2} direction='row'>
+                        <TextField
+                          label='Lower bound'
+                          inputProps={{
+                            type: 'number',
+                          }}
+                          {...register(`params.${i}.0`, {
+                            valueAsNumber: true,
+                            required: true,
+                            validate: value =>
+                              value >= argument.lower_bound && value <= argument.upper_bound,
+                          })}
+                          sx={{ width: 200 }}
+                        />
+                        <TextField
+                          label='Upper bound'
+                          inputProps={{
+                            type: 'number',
+                          }}
+                          {...register(`params.${i}.1`, {
+                            valueAsNumber: true,
+                            required: true,
+                            validate: value =>
+                              value <= argument.upper_bound && value >= argument.lower_bound,
+                          })}
+                          sx={{ width: 200 }}
+                        />
+                        <TextField
+                          label='Step'
+                          min={0}
+                          inputProps={{
+                            type: 'number',
+                          }}
+                          {...register(`params.${i}.2`, {
+                            valueAsNumber: true,
+                            required: true,
+                            validate: value => value > 0,
+                          })}
+                          sx={{ width: 200 }}
+                        />
+                      </Stack>
+
+                      {!formProps.formState.errors.params?.[i] &&
+                        `Iterations: ${Math.floor(iterations)} `}
+                    </Stack>
+                  </ListItem>
+                  <Divider />
+                </Fragment>
+              );
+            })}
           </List>
-          <Button disabled={!formProps.formState.isValid} type='submit'>
+          <Typography>
+            The Algorithm will be run for all possible combinations of parameters: &nbsp;
+            {formProps
+              .watch()
+              .params.reduce((acc, curr) => (acc * (curr[1] - curr[0])) / curr[2], 1)}{' '}
+            times
+          </Typography>
+
+          <Button
+            onClick={formProps.handleSubmit(handleOptunaSubmit)}
+            variant='outlined'
+            // disabled={!formProps.formState.isValid}
+            type='submit'
+          >
+            Trigger Optuna
+          </Button>
+          <Button variant='contained' type='submit'>
             Trigger
           </Button>
         </Stack>

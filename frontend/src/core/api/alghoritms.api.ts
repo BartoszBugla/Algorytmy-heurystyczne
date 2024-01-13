@@ -54,12 +54,54 @@ export const useAlgorithmsApi = ({ enableGetAll, metadataId }: UseAlgorithmsApiO
       name: string;
       fun: string;
       domain: number[][];
-      params: number[];
-    }) => api().algorithms.triggerAlgorithmsNameTriggerPost(name, { fun }, { domain, params }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['algorithms'] });
-    },
+      params: number[][];
+    }) =>
+      api().algorithms.triggerTestAlgorithmsNameTriggerTestPost(name, { fun }, { domain, params }),
+    onSuccess: () => {},
   });
+
+  const triggerAlgorithmOptunaMutation = useMutation({
+    mutationFn: ({
+      name,
+      fun,
+      domain,
+      params,
+    }: {
+      name: string;
+      fun: string;
+      domain: number[][];
+      params: number[][];
+    }) =>
+      api().algorithms.triggerTestAlgorithmsNameTriggerTestPost(name, { fun }, { domain, params }),
+    onSuccess: () => {},
+  });
+
+  const triggerMultiple = useMutation({
+    mutationFn: ({
+      names,
+      fun,
+      domain,
+      params,
+      trials_count,
+    }: {
+      names: string[];
+      fun: string;
+      domain: number[][];
+      params: number[][][];
+      trials_count: number;
+    }) =>
+      api().algorithms.triggerMultipleTestsAlgorithmsTriggerMultipleTestsPost(
+        { fun },
+        {
+          names,
+          domain,
+          params: params.map(data => data.map(nextData => [...nextData, 'float'])),
+          trials_count,
+        },
+      ),
+    onSuccess: () => {},
+  });
+
   return {
     algoritms: allAlgoritmsQuery.data || [],
     allAlgoritmsQuery,
@@ -67,5 +109,7 @@ export const useAlgorithmsApi = ({ enableGetAll, metadataId }: UseAlgorithmsApiO
     metadataQuery,
     deleteAlgoritmMutation,
     triggerAlgorithmMutation,
+    triggerAlgorithmOptunaMutation,
+    triggerMultiple,
   };
 };
