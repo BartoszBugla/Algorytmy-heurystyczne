@@ -94,15 +94,9 @@ const AlogrithmView = () => {
             {fields.map((field, index) => (
               <Stack direction='row' alignItems='center' gap={2} key={field.id}>
                 <Typography color='text.secondary'>Lower Bound</Typography>
-                <TextField
-                  type='number'
-                  {...register(`domain.${index}.0`, { valueAsNumber: true })}
-                />
+                <TextField {...register(`domain.${index}.0`, { valueAsNumber: true })} />
                 <Typography color='text.secondary'>Upper Bound</Typography>
-                <TextField
-                  type='number'
-                  {...register(`domain.${index}.1`, { valueAsNumber: true })}
-                />
+                <TextField {...register(`domain.${index}.1`, { valueAsNumber: true })} />
                 {index > 0 && <RemoveCircleOutlineRounded onClick={() => remove(index)} />}
               </Stack>
             ))}
@@ -135,9 +129,6 @@ const AlogrithmView = () => {
                       <Stack gap={2} direction='row'>
                         <TextField
                           label='Lower bound'
-                          inputProps={{
-                            type: 'number',
-                          }}
                           {...register(`params.${i}.0`, {
                             valueAsNumber: true,
                             required: true,
@@ -148,9 +139,6 @@ const AlogrithmView = () => {
                         />
                         <TextField
                           label='Upper bound'
-                          inputProps={{
-                            type: 'number',
-                          }}
                           {...register(`params.${i}.1`, {
                             valueAsNumber: true,
                             required: true,
@@ -162,9 +150,6 @@ const AlogrithmView = () => {
                         <TextField
                           label='Step'
                           min={0}
-                          inputProps={{
-                            type: 'number',
-                          }}
                           {...register(`params.${i}.2`, {
                             valueAsNumber: true,
                             required: true,
@@ -191,11 +176,7 @@ const AlogrithmView = () => {
             times
           </Typography>
 
-          <Button
-            onClick={formProps.handleSubmit(handleOptunaSubmit)}
-            variant='outlined'
-            type='submit'
-          >
+          <Button onClick={formProps.handleSubmit(handleOptunaSubmit)} variant='outlined'>
             Trigger Optuna
           </Button>
           <Button variant='contained' type='submit'>
