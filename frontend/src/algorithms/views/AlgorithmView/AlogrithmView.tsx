@@ -15,6 +15,7 @@ import {
   List,
   ListItem,
   Paper,
+  Slider,
   Stack,
   TextField,
   Typography,
@@ -124,7 +125,7 @@ const AlogrithmView = () => {
                       <Typography>{`Range (${argument.lower_bound}:${argument.upper_bound})`}</Typography>
                       <Typography color='error'>
                         {!!formProps.formState.errors?.params?.[i]?.length &&
-                          `Invalid values in this section all fields are required, has to be in range  from ${argument.lower_bound} to ${argument.upper_bound} and step has to be positive`}
+                          `Invalid values in this section all fields are required, has to be in range  from ${argument.lower_bound} to ${argument.upper_bound}, step has to be positive and lower bound has to be lower than upper bound`}
                       </Typography>
                       <Stack gap={2} direction='row'>
                         <TextField
@@ -133,9 +134,10 @@ const AlogrithmView = () => {
                             valueAsNumber: true,
                             required: true,
                             validate: value =>
-                              value >= argument.lower_bound && value <= argument.upper_bound,
+                              value <= argument.upper_bound &&
+                              value >= argument.lower_bound &&
+                              value < formProps.watch(`params.${i}.1`),
                           })}
-                          sx={{ width: 200 }}
                         />
                         <TextField
                           label='Upper bound'
@@ -143,7 +145,9 @@ const AlogrithmView = () => {
                             valueAsNumber: true,
                             required: true,
                             validate: value =>
-                              value <= argument.upper_bound && value >= argument.lower_bound,
+                              value <= argument.upper_bound &&
+                              value >= argument.lower_bound &&
+                              value > formProps.watch(`params.${i}.0`),
                           })}
                           sx={{ width: 200 }}
                         />
