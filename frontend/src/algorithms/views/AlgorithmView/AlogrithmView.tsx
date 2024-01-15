@@ -15,7 +15,6 @@ import {
   List,
   ListItem,
   Paper,
-  Slider,
   Stack,
   TextField,
   Typography,
