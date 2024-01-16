@@ -1,4 +1,5 @@
 import itertools
+import os
 import random
 from typing import Callable, List, Dict, Tuple
 
@@ -93,20 +94,13 @@ class AlgorithmsService:
             results["f_best"].append(algorithm.f_best)
 
         results_df = pd.DataFrame(results)
-        results_df.to_csv(f"{algorithm.name}_test_results.csv")
+        results_df.to_csv(f"storage/raports/{algorithm.name}_test_results.csv")
 
     def trigger_optuna_test_by_name(
         self, name: str, fun: str, domain: List[List[float]], params: List[Tuple[float, float, str]], trials_count: int
     ):
         def objective(trial, function, param_dict):
             algorithm = self._get_instance_by_name(name)
-            # fun_module = functions_service.storage.load_file(fun)
-            # function = fun_module.__main__
-            #
-            # param_names = [x.name for x in algorithm.params_info]
-            #
-            # param_ranges = [x for x in params]
-            # param_dict = dict(zip(param_names, param_ranges))
 
             param_choices = []
             for key, value in param_dict.items():
@@ -128,10 +122,16 @@ class AlgorithmsService:
         param_ranges = [x for x in params]
         param_dict = dict(zip(param_names, param_ranges))
 
-        study = optuna.create_study(direction="minimize")
+        study = optuna.create_study(
+            direction="minimize", storage=f"sqlite:///optuna_{algorithm.name}.db", load_if_exists=True, study_name=algorithm.name
+        )
+        trials_count = trials_count - len(study.trials)
         study.optimize(lambda trial: objective(trial, function, param_dict), n_trials=trials_count)
+
         random_num = random.randint(0, 100000)
         print(f"{name} {random_num} finished with best value {study.best_value} and best params {study.best_params}")
-        study.trials_dataframe().to_csv(f"{name}_{random_num}_test_results.csv")
+
+        study.trials_dataframe().to_csv(f"storage/raports/{name}_{random_num}_test_results.csv")
+        os.remove(f"optuna_{algorithm.name}.db")
 
 algorithms_service = AlgorithmsService()
