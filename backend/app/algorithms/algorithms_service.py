@@ -1,6 +1,7 @@
 import itertools
 import os
 import random
+import time
 from typing import Callable, List, Dict, Tuple
 
 from fastapi import UploadFile
@@ -9,6 +10,7 @@ from app.storage import StorageService
 import numpy as np
 import pandas as pd
 import optuna
+import gc
 
 from app.algorithms.algorithms_models import AlgorithmMetadata, ParamInfo
 from app.functions.functions_service import functions_service
@@ -123,7 +125,10 @@ class AlgorithmsService:
         param_dict = dict(zip(param_names, param_ranges))
 
         study = optuna.create_study(
-            direction="minimize", storage=f"sqlite:///optuna_{algorithm.name}.db", load_if_exists=True, study_name=algorithm.name
+            direction="minimize",
+            storage=f"sqlite:///optuna_{algorithm.name}.db",
+            load_if_exists=True,
+            study_name=algorithm.name,
         )
         trials_count = trials_count - len(study.trials)
         study.optimize(lambda trial: objective(trial, function, param_dict), n_trials=trials_count)
@@ -132,6 +137,10 @@ class AlgorithmsService:
         print(f"{name} {random_num} finished with best value {study.best_value} and best params {study.best_params}")
 
         study.trials_dataframe().to_csv(f"storage/raports/{name}_{random_num}_test_results.csv")
+
+        # TODO: change this way of removing this file
+        del study
+        gc.collect()
         os.remove(f"optuna_{algorithm.name}.db")
 
 algorithms_service = AlgorithmsService()
