@@ -11,6 +11,20 @@ export const mainTheme = createTheme({
       },
     },
 
+    MuiInputLabel: {
+      defaultProps: {
+        disableAnimation: true,
+        shrink: true,
+      },
+      styleOverrides: {
+        root: ({ theme }) => ({
+          position: 'relative',
+          transform: 'none',
+          marginBottom: 6,
+        }),
+      },
+    },
+
     MuiPaper: {
       styleOverrides: {
         root: {
@@ -22,6 +36,17 @@ export const mainTheme = createTheme({
     },
     MuiOutlinedInput: {
       styleOverrides: {
+        root: {
+          // remove default styling
+          '& fieldset': {
+            top: 0,
+          },
+
+          '& legend': {
+            top: 0,
+            span: { display: 'none' },
+          },
+        },
         notchedOutline: {
           borderRadius: 12,
           '& .Mui-focused': {
