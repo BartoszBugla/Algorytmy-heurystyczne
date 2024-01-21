@@ -3,7 +3,8 @@ import os
 import random
 import time
 from typing import Callable, List, Dict, Tuple
-
+import csv
+from reportlab.pdfgen import canvas
 from fastapi import UploadFile
 from app.core.models import IOptimizationAlgorithm
 from app.storage import StorageService
@@ -11,11 +12,15 @@ import numpy as np
 import pandas as pd
 import optuna
 import gc
-
+from datetime import datetime
 from app.algorithms.algorithms_models import AlgorithmMetadata, ParamInfo
 from app.functions.functions_service import functions_service
-
-
+from tabulate import tabulate
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import Paragraph
 
 class AlgorithmsService:
     def __init__(self):
@@ -115,6 +120,54 @@ class AlgorithmsService:
         os.remove(f"storage/raports/{algorithm.name}_test_state.csv")
         results_df.to_csv(f"storage/raports/{algorithm.name}_test_results.csv", index=False)
         print(f"{algorithm.name} finished results saved to storage/raports/{algorithm.name}_test_results.csv")
+        
+
+
+        csv_filee = f"storage/raports/PVS_test_results.csv"
+        pdf_file = "example.pdf"
+        
+
+
+        # Otwieranie pliku CSV
+        with open(csv_filee, 'r') as csv_file:
+            csv_reader = csv.reader(csv_file)
+
+            # Zamiana danych z pliku CSV na tabelę
+            data = list(csv_reader)
+            headers = data[0]
+            rows = data[1:]
+            table_data = [headers] + rows
+
+            # Tworzenie obiektu canvas
+            pdf_canvas = SimpleDocTemplate(pdf_file, pagesize=letter)
+            
+            # Dodawanie tytułu (nazwy algorytmu)
+            elements = []
+            elements.append(Paragraph(f"Tytu", getSampleStyleSheet()["Title"]))
+            
+            # Dodawanie daty
+            current_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            elements.append(Paragraph(f"Data: {current_date}", getSampleStyleSheet()["BodyText"]))
+
+            # Dodawanie tabeli do dokumentu PDF
+            pdf_table = Table(table_data)
+            pdf_table.setStyle(TableStyle([('ALIGN', (1, 1), (-2, -2), 'RIGHT'),
+                                        ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+                                        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                                        ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+                                        ('GRID', (0, 0), (-1, -1), 1, colors.black)]))
+
+            elements.append(pdf_table)
+
+            # Dodawanie elementów do dokumentu PDF
+            pdf_canvas.build(elements)
+
+        
+
+
+        
+        print(f"Plik PDF został wygenerowany na podstawie pliku CSV: {pdf_file}")
+
 
     def trigger_optuna_test_by_name(
         self, name: str, fun: str, domain: List[List[float]], params: List[Tuple[float, float, str]], trials_count: int
