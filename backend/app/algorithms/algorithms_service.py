@@ -226,7 +226,7 @@ class AlgorithmsService:
         current_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         current_date2 = datetime.now().strftime("%Y-%m-%d %H-%M-%S")
 
-        pdf_file = f"storage/raports/Raport-{current_date2}-{algorithm.name}.pdf"
+        pdf_file = f"storage/raports/Raport-{current_date2}-{algorithm.name}_optuna.pdf"
         csv_filee = f"storage/raports/{name}_{random_num}_test_results.csv"
         
 
