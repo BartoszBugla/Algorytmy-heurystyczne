@@ -2,10 +2,16 @@ from collections import defaultdict
 import os
 import numpy as np
 from scipy.special import gamma
-from storage.algorithms.interfaces import IOptimizationAlgorithm, IStateWriter, IStateReader, ParamInfo
+from storage.algorithms.interfaces import (
+    IOptimizationAlgorithm,
+    IStateWriter,
+    IStateReader,
+    ParamInfo,
+)
 
 import math
 import time
+
 
 class StateWriter(IStateWriter):
     def save_to_file_state_of_algorithm(self, algo, n_iteration, path: str):
@@ -55,15 +61,16 @@ class StateReader(IStateReader):
             xbest = np.array(xbest).astype(float)
         return iter, eval, pop, fbest, xbest
 
+
 class goa(IOptimizationAlgorithm):
     def __init__(self):
         super().__init__("Gazelle Optimization Algorithm")
 
         self.params_info: List[ParamInfo] = [
-            ParamInfo("PSRs", "PSRs", math.inf, 0),
-            ParamInfo("S", "S", math.inf, 0),
-            ParamInfo("SearchAgents", "SearchAgents", math.inf, 0),
-            ParamInfo('MaxIter', 'MaxIter', math.inf, 0),
+            ParamInfo("PSRs", "PSRs", 99999, 0),
+            ParamInfo("S", "S", 99999, 0),
+            ParamInfo("SearchAgents", "SearchAgents", 99999, 0),
+            ParamInfo("MaxIter", "MaxIter", 99999, 0),
         ]
         self.number_of_evaluation_fitness_function = 0
         self.SearchAgents_no = 0

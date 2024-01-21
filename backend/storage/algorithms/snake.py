@@ -14,27 +14,32 @@ from storage.algorithms.interfaces import (
     ParamInfo,
 )
 
+
 class AlgorithmState(TypedDict):
     IterationNumber: int
     NumberOfEvaluationFitnessFunction: int
     Population: np.ndarray
     Fitness: np.ndarray
 
+
 class SnakeWriter(IStateWriter):
     def save_to_file_state_of_algorithm(self, path, algorithm_state):
         try:
-            with open(path, 'w') as writer:
+            with open(path, "w") as writer:
                 writer.write(f"{algorithm_state['IterationNumber']}\n")
-                writer.write(f"{algorithm_state['NumberOfEvaluationFitnessFunction']}\n")
+                writer.write(
+                    f"{algorithm_state['NumberOfEvaluationFitnessFunction']}\n"
+                )
 
-                for i in range(len(algorithm_state['Fitness'])):
-                    x_str = " ".join(map(str, algorithm_state['Population'][i]))
+                for i in range(len(algorithm_state["Fitness"])):
+                    x_str = " ".join(map(str, algorithm_state["Population"][i]))
                     writer.write(f"{x_str} {algorithm_state['Fitness'][i]}\n")
 
             # Uncomment the next line if you want to print a success message
             # print(f"Plik {path} został pomyślnie zapisany.")
         except Exception as ex:
             print(f"Wystąpił błąd podczas zapisu do pliku: {ex}")
+
 
 class SnakeReader(IStateReader):
     def load_from_file_state_of_algorithm(self, path: str) -> AlgorithmState:
@@ -44,7 +49,7 @@ class SnakeReader(IStateReader):
         iteration_number = 0
         number_of_evaluation_fitness_function = 0
 
-        with open(path, 'r') as file:
+        with open(path, "r") as file:
             iteration_number = int(file.readline().strip())
 
             # Read the number of fitness function evaluations
@@ -52,7 +57,7 @@ class SnakeReader(IStateReader):
 
             # Read population along with fitness values
             for line in file:
-                parts = line.split(' ')
+                parts = line.split(" ")
 
                 # Sample data handling - adjust to the actual format
                 x = list(map(float, parts[:-1]))
@@ -68,11 +73,13 @@ class SnakeReader(IStateReader):
             "IterationNumber": iteration_number,
             "NumberOfEvaluationFitnessFunction": number_of_evaluation_fitness_function,
             "Population": X,
-            "Fitness": fitness
+            "Fitness": fitness,
         }
+
 
 class SnakeGeneratePDFReport(IGeneratePDFReport):
     pass
+
 
 class snake(IOptimizationAlgorithm):
     def __init__(self):
@@ -85,7 +92,9 @@ class snake(IOptimizationAlgorithm):
         self.writer: SnakeWriter = SnakeWriter()
         self.reader: SnakeReader = SnakeReader()
 
-    def solve(self, fitness_function: Callable, domain, parameters: List[float]) -> List[float]:
+    def solve(
+        self, fitness_function: Callable, domain, parameters: List[float]
+    ) -> List[float]:
         domain = np.array(domain).transpose()
         print(parameters)
         dim = domain.shape[1]
@@ -102,14 +111,18 @@ class snake(IOptimizationAlgorithm):
 
         rnd = random.Random()
         X = np.zeros((N, dim))
-        
+
         fitness = np.zeros(N)
 
         if os.path.exists("snake_state.txt"):
-            algorithm_state = self.reader.load_from_file_state_of_algorithm("snake_state.txt")
+            algorithm_state = self.reader.load_from_file_state_of_algorithm(
+                "snake_state.txt"
+            )
 
             tStart = algorithm_state["IterationNumber"] + 1
-            self.number_of_evaluation_fitness_function = algorithm_state["NumberOfEvaluationFitnessFunction"]
+            self.number_of_evaluation_fitness_function = algorithm_state[
+                "NumberOfEvaluationFitnessFunction"
+            ]
             X = algorithm_state["Population"]
             fitness = algorithm_state["Fitness"]
         else:
@@ -147,9 +160,6 @@ class snake(IOptimizationAlgorithm):
         male_fitness = fitness[:Nm].copy()
         female_fitness = fitness[Nm:].copy()
 
-        
-        
-
         # Get best male
         bestMale_fitValue = np.min(male_fitness)
         bestMale_fitValue_index = np.where(male_fitness == bestMale_fitValue)[0][0]
@@ -157,7 +167,9 @@ class snake(IOptimizationAlgorithm):
 
         # Get best female (same as male)
         bestFemale_fitValue = np.min(female_fitness)
-        bestFemale_fitValue_index = np.where(female_fitness == bestFemale_fitValue)[0][0]
+        bestFemale_fitValue_index = np.where(female_fitness == bestFemale_fitValue)[0][
+            0
+        ]
         XBestFemale = Xf[bestFemale_fitValue_index].copy()
 
         Xnewm = np.zeros((Nm, dim))
@@ -181,8 +193,12 @@ class snake(IOptimizationAlgorithm):
                     Xrandm = Xm[randmid].copy()
                     flagid = int(2 * rnd.random())
                     flag = vecflag[flagid]
-                    Am = math.exp(-male_fitness[randmid] / (male_fitness[i] + np.finfo(float).eps))
-                    Xnewm[i] = Xrandm + flag * c2 * Am * ((xmax - xmin) * rnd.random() + xmin)
+                    Am = math.exp(
+                        -male_fitness[randmid] / (male_fitness[i] + np.finfo(float).eps)
+                    )
+                    Xnewm[i] = Xrandm + flag * c2 * Am * (
+                        (xmax - xmin) * rnd.random() + xmin
+                    )
 
                 # For females
                 for i in range(Nf):
@@ -190,8 +206,13 @@ class snake(IOptimizationAlgorithm):
                     Xrandf = Xf[randfid].copy()
                     flagid = int(2 * rnd.random())
                     flag = vecflag[flagid]
-                    Af = math.exp(-female_fitness[randfid] / (female_fitness[i] + np.finfo(float).eps))
-                    Xnewf[i] = Xrandf + flag * c2 * Af * ((xmax - xmin) * rnd.random() + xmin)
+                    Af = math.exp(
+                        -female_fitness[randfid]
+                        / (female_fitness[i] + np.finfo(float).eps)
+                    )
+                    Xnewf[i] = Xrandf + flag * c2 * Af * (
+                        (xmax - xmin) * rnd.random() + xmin
+                    )
             else:
                 # Exploitation phase (food exists)
                 if Temp > treshold2:
@@ -202,38 +223,62 @@ class snake(IOptimizationAlgorithm):
                     for i in range(Nm):
                         flagid = int(2 * rnd.random())
                         flag = vecflag[flagid]
-                        Xnewm[i] = self.XBest + flag * c3 * Temp * rnd.random() * (self.XBest - Xm[i])
+                        Xnewm[i] = self.XBest + flag * c3 * Temp * rnd.random() * (
+                            self.XBest - Xm[i]
+                        )
 
                     # For females
                     for i in range(Nf):
                         flagid = int(2 * rnd.random())
                         flag = vecflag[flagid]
-                        Xnewf[i] = self.XBest + flag * c3 * Temp * rnd.random() * (self.XBest - Xf[i])
+                        Xnewf[i] = self.XBest + flag * c3 * Temp * rnd.random() * (
+                            self.XBest - Xf[i]
+                        )
                 else:  # Cold
                     if rnd.random() > 0.6:
                         # Fight
 
                         # For males
                         for i in range(Nm):
-                            Fm = math.exp(-bestFemale_fitValue / (male_fitness[i] + np.finfo(float).eps))
-                            Xnewm[i] = Xm[i] + c3 * Fm * rnd.random() * (Q * XBestFemale - Xm[i])
+                            Fm = math.exp(
+                                -bestFemale_fitValue
+                                / (male_fitness[i] + np.finfo(float).eps)
+                            )
+                            Xnewm[i] = Xm[i] + c3 * Fm * rnd.random() * (
+                                Q * XBestFemale - Xm[i]
+                            )
 
                         # For females
                         for i in range(Nf):
-                            Ff = math.exp(-bestMale_fitValue / (female_fitness[i] + np.finfo(float).eps))
-                            Xnewf[i] = Xf[i] + c3 * Ff * rnd.random() * (Q * XBestMale - Xf[i])
+                            Ff = math.exp(
+                                -bestMale_fitValue
+                                / (female_fitness[i] + np.finfo(float).eps)
+                            )
+                            Xnewf[i] = Xf[i] + c3 * Ff * rnd.random() * (
+                                Q * XBestMale - Xf[i]
+                            )
                     else:
                         # Mating
 
                         # For males
                         for i in range(Nm):
-                            Mm = math.exp(-female_fitness[i] / (male_fitness[i] + np.finfo(float).eps))
-                            Xnewm[i] = Xm[i] + c3 * Mm * rnd.random() * (Q * Xf[i] - Xm[i])
+                            Mm = math.exp(
+                                -female_fitness[i]
+                                / (male_fitness[i] + np.finfo(float).eps)
+                            )
+                            Xnewm[i] = Xm[i] + c3 * Mm * rnd.random() * (
+                                Q * Xf[i] - Xm[i]
+                            )
 
                         # For females
                         for i in range(Nf):
-                            Mf = math.exp(-male_fitness[i] / (female_fitness[i] + np.finfo(float).eps))
-                            Xnewf[i] = Xf[i] + c3 * Mf * rnd.random() * (Q * Xm[i] - Xf[i])
+                            Mf = math.exp(
+                                -male_fitness[i]
+                                / (female_fitness[i] + np.finfo(float).eps)
+                            )
+                            Xnewf[i] = Xf[i] + c3 * Mf * rnd.random() * (
+                                Q * Xm[i] - Xf[i]
+                            )
 
                         # Randomize if egg hatches
                         flagid = int(2 * rnd.random())
@@ -245,8 +290,12 @@ class snake(IOptimizationAlgorithm):
                             worstMale_fitValue_index = np.argmax(male_fitness)
                             worstFemale_fitValue_index = np.argmax(female_fitness)
                             # Replace them
-                            Xnewm[worstMale_fitValue_index] = xmin + rnd.random() * (xmax - xmin)
-                            Xnewf[worstFemale_fitValue_index] = xmin + rnd.random() * (xmax - xmin)
+                            Xnewm[worstMale_fitValue_index] = xmin + rnd.random() * (
+                                xmax - xmin
+                            )
+                            Xnewf[worstFemale_fitValue_index] = xmin + rnd.random() * (
+                                xmax - xmin
+                            )
 
             for i in range(Nm):
                 for j in range(dim):
@@ -275,10 +324,14 @@ class snake(IOptimizationAlgorithm):
                     Xf[i] = Xnewf[i].copy()
 
             newBestMale_fitValue = np.min(male_fitness)
-            newBestMale_fitValue_index = np.where(male_fitness == newBestMale_fitValue)[0][0]
+            newBestMale_fitValue_index = np.where(male_fitness == newBestMale_fitValue)[
+                0
+            ][0]
 
             newBestFemale_fitValue = np.min(female_fitness)
-            newBestFemale_fitValue_index = np.where(female_fitness == newBestFemale_fitValue)[0][0]
+            newBestFemale_fitValue_index = np.where(
+                female_fitness == newBestFemale_fitValue
+            )[0][0]
 
             if newBestMale_fitValue < bestMale_fitValue:
                 XBestMale = Xm[newBestMale_fitValue_index].copy()
@@ -305,10 +358,12 @@ class snake(IOptimizationAlgorithm):
                 "IterationNumber": t,
                 "NumberOfEvaluationFitnessFunction": self.number_of_evaluation_fitness_function,
                 "Population": X.copy(),
-                "Fitness": fitness.copy()
+                "Fitness": fitness.copy(),
             }
 
-            self.writer.save_to_file_state_of_algorithm("snake_state.txt", algorithm_state)
+            self.writer.save_to_file_state_of_algorithm(
+                "snake_state.txt", algorithm_state
+            )
         self.x_best = self.XBest
         self.f_best = self.FBest
         if os.path.exists("snake_state.txt"):
