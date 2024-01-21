@@ -5,7 +5,7 @@ import numpy as np
 import os
 import random
 
-from interfaces import (
+from storage.algorithms.interfaces import (
     IStateReader,
     IStateWriter,
     IGeneratePDFReport,
@@ -29,20 +29,20 @@ class hba(IOptimizationAlgorithm):
         self.params_info: List[ParamInfo] = [
             ParamInfo("population_base_size", "Population base size", math.inf, 3),
             ParamInfo("t_max", "Number of generations", math.inf, 1),
-            ParamInfo("param_c", "param_c", math.inf, 1),
-            ParamInfo("param_b", "param_b", math.inf, 1),
+            ParamInfo("param_c", "param_c", 3, 0.5),
+            ParamInfo("param_b", "param_b", 8, 0.5),
         ]
 
-        self.writer: HBAWriter = HBAWriter()
-        self.reader: HBAReader = HBAReader()
+        # self.writer: HBAWriter = HBAWriter()
+        # self.reader: HBAReader = HBAReader()
 
     def solve(self, test_function: Callable, domain: List[List[float]], parameters: List[float]) -> List[float]:
-        #Changed for our standards
-        domain = domain.transpose()
+        domain = np.array(domain)
         lower_bound = domain[0]
         upper_bound = domain[1]
         population_base_size, t_max, param_c, param_b = parameters
-
+        population_base_size = int(population_base_size)
+        t_max = int(t_max)
         self.number_of_evaluation_fitness_function = 0
         eps = np.finfo(float).eps
         dimension = len(lower_bound)
@@ -53,7 +53,7 @@ class hba(IOptimizationAlgorithm):
         
         # Initialize fitness table
         fit_table = np.array([test_function(candidate) for candidate in candidates])
-
+        
         # Initialize prey
         f_prey = np.min(fit_table)
         x_prey = candidates[np.argmin(fit_table)]

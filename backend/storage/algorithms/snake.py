@@ -86,7 +86,8 @@ class snake(IOptimizationAlgorithm):
         self.reader: SnakeReader = SnakeReader()
 
     def solve(self, fitness_function: Callable, domain, parameters: List[float]) -> List[float]:
-        domain = np.array(domain).transpose()
+        domain = np.array(domain)
+        print(parameters)
         dim = domain.shape[1]
 
         self.XBest = np.zeros(dim)
@@ -308,8 +309,6 @@ class snake(IOptimizationAlgorithm):
             }
 
             self.writer.save_to_file_state_of_algorithm("snake_state.txt", algorithm_state)
-        print('Najlepszy osobnik: ', self.XBest)
-        print('Wartosc funkcji celu dla najlepszego osobnika: ', self.FBest)
         self.x_best = self.XBest
         self.f_best = self.FBest
         if os.path.exists("snake_state.txt"):
