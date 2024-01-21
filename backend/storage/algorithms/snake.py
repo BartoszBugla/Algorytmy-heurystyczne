@@ -86,7 +86,7 @@ class snake(IOptimizationAlgorithm):
         self.reader: SnakeReader = SnakeReader()
 
     def solve(self, fitness_function: Callable, domain, parameters: List[float]) -> List[float]:
-        domain = np.array(domain)
+        domain = np.array(domain).transpose()
         print(parameters)
         dim = domain.shape[1]
 

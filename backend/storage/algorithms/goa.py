@@ -99,7 +99,7 @@ class goa(IOptimizationAlgorithm):
     def solve(self, fitness_function, domain, parameters: list[float]):
         # domain = [fitness_function.lb, fitness_function.ub]
         filename = f"_{self.SearchAgents_no}.txt"
-        domain = np.array(domain)
+        domain = np.array(domain).transpose()
         if os.path.exists(filename):
             (
                 Iter,
