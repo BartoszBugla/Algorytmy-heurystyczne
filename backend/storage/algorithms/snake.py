@@ -74,7 +74,7 @@ class SnakeReader(IStateReader):
 class SnakeGeneratePDFReport(IGeneratePDFReport):
     pass
 
-class SnakeOptimizer(IOptimizationAlgorithm):
+class snake(IOptimizationAlgorithm):
     def __init__(self):
         super().__init__("Snake")
 
@@ -85,42 +85,40 @@ class SnakeOptimizer(IOptimizationAlgorithm):
         self.writer: SnakeWriter = SnakeWriter()
         self.reader: SnakeReader = SnakeReader()
 
-    def solve(self, fitness_function: Callable, domain, parameters: List[float]):
+    def solve(self, fitness_function: Callable, domain, parameters: List[float]) -> List[float]:
         domain = np.array(domain).transpose()
         dim = domain.shape[1]
 
         self.XBest = np.zeros(dim)
         self.FBest = 0.0
-        self.NumberOfEvaluationFitnessFunction = 0
+        self.number_of_evaluation_fitness_function = 0
 
         xmin = domain[0, :]
         xmax = domain[1, :]
 
-        T, N = parameters
+        T, N = [int(i) for i in parameters]
         tStart = 1
 
         rnd = random.Random()
-
         X = np.zeros((N, dim))
         
         fitness = np.zeros(N)
 
         if os.path.exists("snake_state.txt"):
-            print('existsss')
             algorithm_state = self.reader.load_from_file_state_of_algorithm("snake_state.txt")
 
             tStart = algorithm_state["IterationNumber"] + 1
-            self.NumberOfEvaluationFitnessFunction = algorithm_state["NumberOfEvaluationFitnessFunction"]
+            self.number_of_evaluation_fitness_function = algorithm_state["NumberOfEvaluationFitnessFunction"]
             X = algorithm_state["Population"]
             fitness = algorithm_state["Fitness"]
         else:
-            self.NumberOfEvaluationFitnessFunction = 0
+            self.number_of_evaluation_fitness_function = 0
 
             # Initialize snake swarm and calculate fitness of each snake
             for i in range(N):
                 X[i] = xmin + rnd.random() * (xmax - xmin)
                 fitness[i] = fitness_function(X[i])
-                self.NumberOfEvaluationFitnessFunction += 1
+                self.number_of_evaluation_fitness_function += 1
 
         # print(tStart)
 
@@ -147,7 +145,7 @@ class SnakeOptimizer(IOptimizationAlgorithm):
         Xf = X[Nm:].copy()  # females
         male_fitness = fitness[:Nm].copy()
         female_fitness = fitness[Nm:].copy()
-        
+
         
         
 
@@ -257,7 +255,7 @@ class SnakeOptimizer(IOptimizationAlgorithm):
                         Xnewm[i, j] = xmin[j]
 
                 y = fitness_function(Xnewm[i])
-                self.NumberOfEvaluationFitnessFunction += 1
+                self.number_of_evaluation_fitness_function += 1
                 if y < male_fitness[i]:
                     male_fitness[i] = y
                     Xm[i] = Xnewm[i].copy()
@@ -270,7 +268,7 @@ class SnakeOptimizer(IOptimizationAlgorithm):
                         Xnewf[i, j] = xmin[j]
 
                 y = fitness_function(Xnewf[i])
-                self.NumberOfEvaluationFitnessFunction += 1
+                self.number_of_evaluation_fitness_function += 1
                 if y < female_fitness[i]:
                     female_fitness[i] = y
                     Xf[i] = Xnewf[i].copy()
@@ -304,7 +302,7 @@ class SnakeOptimizer(IOptimizationAlgorithm):
 
             algorithm_state = {
                 "IterationNumber": t,
-                "NumberOfEvaluationFitnessFunction": self.NumberOfEvaluationFitnessFunction,
+                "NumberOfEvaluationFitnessFunction": self.number_of_evaluation_fitness_function,
                 "Population": X.copy(),
                 "Fitness": fitness.copy()
             }
@@ -312,7 +310,8 @@ class SnakeOptimizer(IOptimizationAlgorithm):
             self.writer.save_to_file_state_of_algorithm("snake_state.txt", algorithm_state)
         print('Najlepszy osobnik: ', self.XBest)
         print('Wartosc funkcji celu dla najlepszego osobnika: ', self.FBest)
-
+        self.x_best = self.XBest
+        self.f_best = self.FBest
         if os.path.exists("snake_state.txt"):
             os.remove("snake_state.txt")
 

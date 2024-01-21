@@ -49,6 +49,63 @@ export interface BodyTriggerAlgorithmsNameTriggerPost {
   params: number[];
 }
 
+/** Body_trigger_multiple_tests_algorithms_trigger_multiple_tests_post */
+export interface BodyTriggerMultipleTestsAlgorithmsTriggerMultipleTestsPost {
+  /**
+   * Names
+   * The names of the algorithms to trigger
+   */
+  names: string[];
+  /**
+   * Domain
+   * domain for all dimnensions example: [[-5.12, 5.12], [-5.12, 5.12]]]
+   */
+  domain: number[][];
+  /**
+   * Params
+   * The parameters for the algorithm in format  List of of Lists of parameters datafor next algorithms in order[[range_start, range_end, 'int'/'float'], [], etc.,where next lists are the values for next parameters, example:[[[3,100,'int'],[20, 300,'int']],[[3,100,'int'],[20, 300,'int']]]
+   */
+  params: any[][][];
+  /**
+   * Trials Count
+   * Number of trials for each algorithm
+   */
+  trials_count: number;
+}
+
+/** Body_trigger_optuna_test_algorithms__name__trigger_optuna_test_post */
+export interface BodyTriggerOptunaTestAlgorithmsNameTriggerOptunaTestPost {
+  /**
+   * Domain
+   * domain for all dimnensions example: [[-5.12, 5.12], [-5.12, 5.12]]
+   */
+  domain: number[][];
+  /**
+   * Params
+   * The parameters for the algorithm in format [[range_start, range_end, int/float], [], etc.,where next lists are the values for next parameters, example: [[3,100,'int'],[20, 300,'int']]
+   */
+  params: any[][];
+  /**
+   * Trials Count
+   * Number of trials for algorithm
+   */
+  trials_count: number;
+}
+
+/** Body_trigger_test_algorithms__name__trigger_test_post */
+export interface BodyTriggerTestAlgorithmsNameTriggerTestPost {
+  /**
+   * Domain
+   * domain for all dimnensions example: [[-5.12, 5.12], [-5.12, 5.12]]]
+   */
+  domain: number[][];
+  /**
+   * Params
+   * The parameters for the algorithm in format [[range_start, range_end, step], [], etc.,where next lists are the values for next parameters if you don't know the order of paramscheck algorithm's metadata
+   */
+  params: number[][];
+}
+
 /** HTTPValidationError */
 export interface HTTPValidationError {
   /** Detail */
@@ -415,6 +472,95 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     ) =>
       this.request<any, HTTPValidationError>({
         path: `/algorithms/${name}/trigger`,
+        method: 'POST',
+        query: query,
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags algorithms
+     * @name TriggerTestAlgorithmsNameTriggerTestPost
+     * @summary Trigger Test
+     * @request POST:/algorithms/{name}/trigger_test
+     */
+    triggerTestAlgorithmsNameTriggerTestPost: (
+      name: string,
+      query: {
+        /**
+         * Fun
+         * The name of the function to use
+         */
+        fun: string;
+      },
+      data: BodyTriggerTestAlgorithmsNameTriggerTestPost,
+      params: RequestParams = {},
+    ) =>
+      this.request<any, HTTPValidationError>({
+        path: `/algorithms/${name}/trigger_test`,
+        method: 'POST',
+        query: query,
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags algorithms
+     * @name TriggerOptunaTestAlgorithmsNameTriggerOptunaTestPost
+     * @summary Trigger Optuna Test
+     * @request POST:/algorithms/{name}/trigger_optuna_test
+     */
+    triggerOptunaTestAlgorithmsNameTriggerOptunaTestPost: (
+      name: string,
+      query: {
+        /**
+         * Fun
+         * The name of the function to use
+         */
+        fun: string;
+      },
+      data: BodyTriggerOptunaTestAlgorithmsNameTriggerOptunaTestPost,
+      params: RequestParams = {},
+    ) =>
+      this.request<any, HTTPValidationError>({
+        path: `/algorithms/${name}/trigger_optuna_test`,
+        method: 'POST',
+        query: query,
+        body: data,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags algorithms
+     * @name TriggerMultipleTestsAlgorithmsTriggerMultipleTestsPost
+     * @summary Trigger Multiple Tests
+     * @request POST:/algorithms/trigger_multiple_tests
+     */
+    triggerMultipleTestsAlgorithmsTriggerMultipleTestsPost: (
+      query: {
+        /**
+         * Fun
+         * The name of the function to use
+         */
+        fun: string;
+      },
+      data: BodyTriggerMultipleTestsAlgorithmsTriggerMultipleTestsPost,
+      params: RequestParams = {},
+    ) =>
+      this.request<any, HTTPValidationError>({
+        path: `/algorithms/trigger_multiple_tests`,
         method: 'POST',
         query: query,
         body: data,
