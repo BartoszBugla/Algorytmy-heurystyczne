@@ -37,7 +37,7 @@ class hba(IOptimizationAlgorithm):
         # self.reader: HBAReader = HBAReader()
 
     def solve(self, test_function: Callable, domain: List[List[float]], parameters: List[float]) -> List[float]:
-        domain = np.array(domain)
+        domain = np.array(domain).transpose()
         lower_bound = domain[0]
         upper_bound = domain[1]
         population_base_size, t_max, param_c, param_b = parameters
