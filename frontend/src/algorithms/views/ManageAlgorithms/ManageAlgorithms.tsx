@@ -39,6 +39,7 @@ const ManageAlgorithms = (props: ManageAlgorithmsProps) => {
     <Paper sx={{ width: '100%', height: '100%' }}>
       <Stack gap={2} padding={5}>
         <Typography variant='h4'>Algorithm manager</Typography>
+        <Typography>View for adding and deleting existing algorithms</Typography>
         <FormControl>
           <FormLabel>Algorithm</FormLabel>
 

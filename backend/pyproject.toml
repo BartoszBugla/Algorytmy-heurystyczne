@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "ssi"
+name = "app"
 version = "0.1.0"
 description = ""
 authors = ["BartoszBugla <48729791+BartoszBugla@users.noreply.github.com>"]
@@ -16,6 +16,7 @@ python-multipart = "^0.0.6"
 dill = "^0.3.7"
 numpy = "^1.26.2"
 optuna = "^3.5.0"
+pandas = "^2.1.4"
 
 
 [build-system]

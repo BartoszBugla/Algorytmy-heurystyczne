@@ -73,11 +73,16 @@ class pvs(IOptimizationAlgorithm):
     def solve(self, fun: Callable = None, domain: List[List[float]] = None, parameters: List[float] = None) -> List[float]:
         self.X = np.array([])
         if os.path.exists("pvs_state.txt"):
-            print("loading state of algorithm")
-            start_gen, start_eval_count, population = self.reader.load_from_file_state_of_algorithm("pvs_state.txt")
-            self.gen_num = start_gen
-            self.number_of_evaluation_fitness_function = start_eval_count
-            self.X = population
+            try:
+                print("loading state of algorithm")
+                start_gen, start_eval_count, population = self.reader.load_from_file_state_of_algorithm("pvs_state.txt")
+                self.gen_num = start_gen
+                self.number_of_evaluation_fitness_function = start_eval_count
+                self.X = population
+            except Exception as e:
+                print(e)
+                print("error while loading state of algorithm")
+                os.remove("pvs_state.txt")
 
         ps, gen = parameters
 

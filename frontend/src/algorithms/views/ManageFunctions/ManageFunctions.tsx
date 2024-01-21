@@ -47,6 +47,7 @@ const ManageFunctions = () => {
     <Paper sx={{ width: '100%', height: '100%' }}>
       <Stack gap={2} padding={5}>
         <Typography variant='h4'>Function manager</Typography>
+        <Typography>View for adding, deleting and testing functions</Typography>
         <FormControl>
           <FormLabel>Function</FormLabel>
 

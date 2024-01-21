@@ -1,4 +1,4 @@
-import { Grid, Link, List, ListItemText, Paper, Stack } from '@mui/material';
+import { Grid, Link, List, ListItemText, Paper, Stack, Typography } from '@mui/material';
 
 import { useAlgorithmsApi } from '@/core/api';
 import { routes } from '@/core/router';
@@ -22,6 +22,7 @@ const AlgorithmsList = () => {
       <Grid item sm={12} width={'100%'}>
         <Paper sx={{ width: '100%', height: '100%' }}>
           <Stack padding={2}>
+            <Typography variant='h4'>Loaded algorithms list</Typography>
             <List>
               {allAlgoritmsQuery.data?.map(algorithm => (
                 <ListItemText>
