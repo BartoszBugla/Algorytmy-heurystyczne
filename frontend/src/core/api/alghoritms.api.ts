@@ -15,7 +15,7 @@ export const useAlgorithmsApi = ({ enableGetAll, metadataId }: UseAlgorithmsApiO
     queryFn: () =>
       api()
         .algorithms.readAllAlgorithmsGet()
-        .then(({ data }) => data),
+        .then(({ data }) => data.filter(name => name !== 'interfaces')),
     enabled: enableGetAll,
   });
 
