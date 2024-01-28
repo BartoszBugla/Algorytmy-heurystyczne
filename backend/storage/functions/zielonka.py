@@ -134,6 +134,7 @@ class Transformer12:
         self.licz_ud(self.v)
 
         while not self.test() and it <= self.iloscPulsow + 1:
+            it += 1
             self.zmiana = False
 
             for i in range(self.iloscPulsow):
@@ -142,23 +143,19 @@ class Transformer12:
                     self.zmiana = True
 
             if not self.zmiana:
-                max_val = self.uD[0]
-
-                for i in range(1, self.iloscPulsow):
-                    if self.uD[i] > max_val:
-                        max_val = self.uD[i]
+                max_val = np.max(self.uD)
 
                 # Odblokowanie wszystkich z maksymalną wartością
                 for i in range(self.iloscPulsow):
                     if abs(self.uD[i] - max_val) < 0.0001 and self.uD[i] > self.spadek:
                         self.d[i] = self.przewodzenie
 
-                self.licz_admitancje()
-                self.licz_wymuszenia(u)
-                self.v = self.gauss_elimination(self.a, self.w, 8)
-                self.licz_ud(self.v)
+            self.licz_admitancje()
+            self.licz_wymuszenia(u)
+            self.v = self.gauss_elimination(self.a, self.w, 8)
+            self.licz_ud(self.v)
 
-                it += 1
+                
 
     def symulacja(self, u, n):
         vtmp = np.zeros(n, dtype=np.float64)
@@ -256,15 +253,10 @@ class FunkcjaCelu12:
 
         return self.wartosc()
 
-    def v(self, x):
+    def v(self, *x):
         for i in range(3):
             self.u[i + 3, :self.n] = x[i] * self.u[i, :self.n] / self.pierwiastek
         return self.t12.symulacja(self.u, self.n)
-
-
-
-
-    
 
 class ObjectiveFunction:
     def __init__(self):
@@ -324,6 +316,7 @@ class ObjectiveFunction:
                                param[7] * math.sin(11 * (self.omega * t + param[13] + 2.0 * self.alpha)) + \
                                param[8] * math.sin(13 * (self.omega * t + param[14] + 2.0 * self.alpha))
             t += self.deltaT
+
 
 def __main__(x):
     of = ObjectiveFunction()
