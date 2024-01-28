@@ -214,6 +214,7 @@ class AlgorithmsService:
         study.optimize(lambda trial: objective(trial, function, param_dict), n_trials=trials_count)
 
         random_num = random.randint(0, 100000)
+
         print(f"{name} {random_num} finished with best value {study.best_value} and best params {study.best_params}")
         study.trials_dataframe().to_csv(f"storage/raports/{name}_{random_num}_test_results.csv", index=False)
 
@@ -225,8 +226,8 @@ class AlgorithmsService:
         current_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         current_date2 = datetime.now().strftime("%Y-%m-%d %H-%M-%S")
 
-        csv_filee = f"storage/raports/{algorithm.name}_test_results.csv"
-        pdf_file = f"storage/raports/Raport-{current_date2}-{algorithm.name}.pdf"
+        pdf_file = f"storage/raports/Raport-{current_date2}-{algorithm.name}_optuna.pdf"
+        csv_filee = f"storage/raports/{name}_{random_num}_test_results.csv"
         
 
 

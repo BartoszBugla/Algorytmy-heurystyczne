@@ -72,7 +72,11 @@ export const useAlgorithmsApi = ({ enableGetAll, metadataId }: UseAlgorithmsApiO
       domain: number[][];
       params: number[][];
     }) =>
-      api().algorithms.triggerTestAlgorithmsNameTriggerTestPost(name, { fun }, { domain, params }),
+      api().algorithms.triggerOptunaTestAlgorithmsNameTriggerOptunaTestPost(
+        name,
+        { fun },
+        { domain, params, trials_count: 30 },
+      ),
     onSuccess: () => {},
   });
 
@@ -95,7 +99,7 @@ export const useAlgorithmsApi = ({ enableGetAll, metadataId }: UseAlgorithmsApiO
         {
           names,
           domain,
-          params: params.map(data => data.map(nextData => [...nextData, 'float'])),
+          params: params.map(data => data.map(nextData => [...nextData, 'int'])),
           trials_count,
         },
       ),
